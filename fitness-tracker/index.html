@@ -298,35 +298,6 @@
             font-size: 14px;
         }
 
-        .install-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            background: rgba(102, 126, 234, 0.08);
-            border: 1px solid rgba(102, 126, 234, 0.18);
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 18px;
-        }
-
-        .install-copy {
-            font-size: 14px;
-            color: #4b5563;
-        }
-
-        .install-copy strong {
-            display: block;
-            color: #333;
-            margin-bottom: 4px;
-        }
-
-        .install-button {
-            width: auto;
-            margin: 0;
-            white-space: nowrap;
-        }
-
         .status-banner {
             position: sticky;
             top: 12px;
@@ -395,15 +366,6 @@
                 grid-template-columns: 1fr 1fr;
             }
 
-            .install-card {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .install-button {
-                width: 100%;
-            }
-
             .status-banner {
                 align-items: flex-start;
                 flex-direction: column;
@@ -427,14 +389,6 @@
                 <button id="statusActionButton" class="hidden">Refresh</button>
                 <button id="statusDismissButton">Dismiss</button>
             </div>
-        </div>
-
-        <div id="installCard" class="card install-card hidden">
-            <div class="install-copy">
-                <strong>Install this app</strong>
-                <span id="installMessage">Add Fitness Tracker to your home screen for a full-screen app experience.</span>
-            </div>
-            <button id="installButton" class="install-button secondary">Install</button>
         </div>
 
         <!-- Header Card -->
@@ -551,6 +505,15 @@
                     CSV format: Date,CycleDay,Notes
                 </p>
 
+                <h3>Restore Full Backup (JSON)</h3>
+                <label class="file-input-label" for="backupUpload">
+                    ♻️ Upload Backup JSON
+                </label>
+                <input type="file" id="backupUpload" accept=".json,application/json" onchange="importBackupJson(event)">
+                <p style="font-size: 12px; color: #666; margin-bottom: 20px;">
+                    Restores workout plan, workout history, cycle history, and cycle settings.
+                </p>
+
                 <h3>Data Management</h3>
                 <button class="secondary" onclick="exportData()">⬇️ Export All Data</button>
                 <button class="danger" onclick="clearAllData()">🗑️ Clear All Data</button>
@@ -586,12 +549,26 @@
         let timerRunning = false;
         let lastPeriodDate = null;
         let avgCycleLength = 29;
-        let deferredInstallPrompt = null;
         let serviceWorkerRegistration = null;
         let statusTimeout = null;
         let workoutTimerInterval = null;
         let workoutSessionStartedAt = null;
         let workoutStatePersistInterval = null;
+
+        async function requestPersistentStorage() {
+            if (!navigator.storage || !navigator.storage.persist) {
+                return;
+            }
+
+            try {
+                const isPersisted = await navigator.storage.persisted();
+                if (!isPersisted) {
+                    await navigator.storage.persist();
+                }
+            } catch (error) {
+                console.warn('Persistent storage request failed:', error);
+            }
+        }
 
         function formatElapsedTime(totalSeconds) {
             const minutes = Math.floor(totalSeconds / 60);
@@ -817,47 +794,6 @@
             }
         }
 
-        function setupInstallPrompt() {
-            const installCard = document.getElementById('installCard');
-            const installButton = document.getElementById('installButton');
-            const installMessage = document.getElementById('installMessage');
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-            if (isStandalone) {
-                installCard.classList.add('hidden');
-                return;
-            }
-
-            const isAppleDevice = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-            if (isAppleDevice) {
-                installMessage.textContent = 'Open this page in Safari, tap Share, then choose Add to Home Screen.';
-                installButton.classList.add('hidden');
-                installCard.classList.remove('hidden');
-                return;
-            }
-
-            installButton.classList.add('hidden');
-            installCard.classList.add('hidden');
-
-            window.addEventListener('beforeinstallprompt', event => {
-                event.preventDefault();
-                deferredInstallPrompt = event;
-                installButton.classList.remove('hidden');
-                installCard.classList.remove('hidden');
-            });
-
-            installButton.addEventListener('click', async () => {
-                if (!deferredInstallPrompt) {
-                    return;
-                }
-
-                deferredInstallPrompt.prompt();
-                await deferredInstallPrompt.userChoice;
-                deferredInstallPrompt = null;
-                installCard.classList.add('hidden');
-            });
-        }
-
         function registerServiceWorker() {
             if (!('serviceWorker' in navigator)) {
                 return;
@@ -981,9 +917,9 @@
 
         // Initialize app
         window.onload = function() {
-            setupInstallPrompt();
             registerServiceWorker();
             attachNetworkListeners();
+            requestPersistentStorage();
             loadFromLocalStorage();
             setDefaultWorkoutPlan();
             restoreCurrentWorkoutState();
@@ -999,6 +935,10 @@
             });
 
             window.addEventListener('pagehide', () => {
+                persistCurrentWorkoutState();
+            });
+
+            window.addEventListener('beforeunload', () => {
                 persistCurrentWorkoutState();
             });
             
@@ -1549,6 +1489,8 @@
                 workoutPlan,
                 workoutHistory,
                 cycleHistory,
+                lastPeriodDate,
+                avgCycleLength,
                 exportDate: new Date().toISOString()
             };
             
@@ -1558,6 +1500,65 @@
             a.href = url;
             a.download = `fitness-backup-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
+        }
+
+        function importBackupJson(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+
+                    if (!data || typeof data !== 'object') {
+                        throw new Error('Invalid backup content');
+                    }
+
+                    if (data.workoutPlan && typeof data.workoutPlan === 'object') {
+                        workoutPlan = data.workoutPlan;
+                    }
+
+                    if (Array.isArray(data.workoutHistory)) {
+                        workoutHistory = data.workoutHistory;
+                    }
+
+                    if (Array.isArray(data.cycleHistory)) {
+                        cycleHistory = data.cycleHistory;
+                    }
+
+                    if (data.lastPeriodDate) {
+                        lastPeriodDate = data.lastPeriodDate;
+                        document.getElementById('lastPeriodDate').value = data.lastPeriodDate;
+                    }
+
+                    if (data.avgCycleLength) {
+                        avgCycleLength = parseInt(data.avgCycleLength) || avgCycleLength;
+                        document.getElementById('avgCycleLength').value = avgCycleLength;
+                    }
+
+                    saveToLocalStorage();
+                    calculateCurrentCycleDay();
+                    updateCycleInfo();
+                    loadWorkoutPlan();
+                    populateHistoryDropdown();
+
+                    clearCurrentWorkoutState();
+                    currentWorkout = null;
+                    stopWorkoutSessionTimer();
+                    document.getElementById('workoutControls').classList.add('hidden');
+                    document.getElementById('workoutExercises').innerHTML = '';
+                    document.getElementById('workoutNotes').value = '';
+                    document.getElementById('workoutElapsed').textContent = 'Workout duration: 00:00';
+
+                    alert('✅ Backup restored successfully!');
+                } catch (error) {
+                    console.error('Could not import backup JSON:', error);
+                    alert('❌ Could not import backup. Please check the JSON file format.');
+                }
+            };
+
+            reader.readAsText(file);
         }
 
         function clearAllData() {
