@@ -11,7 +11,10 @@
     <link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
     <link rel="apple-touch-icon" href="./apple-touch-icon-180.png" sizes="180x180">
     <link rel="manifest" href="./manifest.webmanifest">
-    
+
+    <!-- Cycle Sync Module -->
+    <script src="./cycle-sync.js"></script>
+
     <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -30,13 +33,30 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 20px 20px 100px 20px;
             color: #333;
+        }
+
+        @media (min-width: 769px) {
+            body {
+                display: grid;
+                grid-template-columns: 200px 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
+        }
+
+        @media (min-width: 769px) {
+            .container {
+                grid-column: 2;
+                max-width: 100%;
+                margin: 0;
+            }
         }
 
         .card {
@@ -158,6 +178,7 @@
             border-radius: 8px;
             margin-bottom: 12px;
             border-left: 4px solid #667eea;
+            position: relative;
         }
 
         .exercise-header {
@@ -165,12 +186,320 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
+            gap: 8px;
         }
 
         .exercise-name {
             font-size: 18px;
             font-weight: bold;
             color: #333;
+            flex: 1;
+        }
+
+        .exercise-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .exercise-action-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 8px;
+            color: #667eea;
+            transition: color 0.2s;
+            margin: 0;
+            width: auto;
+        }
+
+        .exercise-action-btn:hover {
+            color: #5568d3;
+        }
+
+        .exercise-action-btn.delete:hover {
+            color: #dc3545;
+        }
+
+        .customised-badge {
+            background: #fff3cd;
+            color: #856404;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 8px;
+        }
+
+        .exercise-edit-mode {
+            background: #fff9e6;
+            border-left-color: #ffc107;
+        }
+
+        .exercise-input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .exercise-input-group input {
+            margin: 0;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .exercise-input-group label {
+            font-size: 11px;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .exercise-input-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .add-exercise-btn {
+            background: #28a745;
+            color: white;
+            border: 2px dashed #28a745;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 12px;
+            transiton: all 0.2s;
+        }
+
+        .add-exercise-btn:hover {
+            background: #218838;
+            border-color: #218838;
+        }
+
+        @media (max-width: 600px) {
+            .exercise-input-group {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Calendar Styles */
+        .calendar-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 12px;
+        }
+
+        .calendar-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+            flex: 1;
+            text-align: center;
+        }
+
+        .calendar-nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 0;
+            transition: all 0.2s;
+            margin: 0;
+        }
+
+        .calendar-nav-btn:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            color: #666;
+            font-size: 12px;
+            padding: 8px 0;
+            text-transform: uppercase;
+        }
+
+        .calendar-cell {
+            aspect-ratio: 1;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            background: white;
+            font-weight: 500;
+            transition: all 0.2s;
+            min-height: 50px;
+        }
+
+        .calendar-cell:hover:not(.empty) {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .calendar-cell.empty {
+            background: #f5f5f5;
+            cursor: default;
+            border-color: #f5f5f5;
+        }
+
+        .calendar-cell.today {
+            border-color: #667eea;
+            border-width: 3px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .calendar-cell.strength::before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            top: 4px;
+            right: 4px;
+        }
+
+        .calendar-cell.pilates::before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #20b2aa;
+            top: 4px;
+            right: 4px;
+        }
+
+        .calendar-cell.rest::before {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ccc;
+            top: 5px;
+            right: 5px;
+        }
+
+        .calendar-phase-band {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .phase-indicator {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            color: #666;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .phase-menstrual { background: #fee; }
+        .phase-follicular { background: #efe; }
+        .phase-ovulatory { background: #ffe; }
+        .phase-luteal { background: #eef; }
+
+        .day-detail-card {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .day-detail-header {
+            font-size: 16px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .day-detail-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #999;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+        }
+
+        .day-detail-exercise {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 3px solid #667eea;
+        }
+
+        .day-detail-exercise-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .day-detail-exercise-details {
+            font-size: 12px;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            .calendar-cell {
+                min-height: 45px;
+                font-size: 14px;
+            }
+
+            .calendar-grid {
+                gap: 6px;
+            }
         }
 
         .superset-badge {
@@ -206,7 +535,7 @@
 
         .timer-display {
             position: fixed;
-            bottom: 20px;
+            bottom: 100px;
             right: 20px;
             background: #28a745;
             color: white;
@@ -248,26 +577,115 @@
         }
 
         .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
+            display: none;
         }
 
         .tab {
-            padding: 12px 20px;
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-weight: 600;
-            color: #666;
-            margin-bottom: -2px;
+            display: none;
         }
 
-        .tab.active {
+        /* Tab Navigation - New System */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tab-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 0;
+            width: auto;
+            transition: color 0.2s;
+        }
+
+        .tab-button.active {
             color: #667eea;
-            border-bottom-color: #667eea;
+            border-top: 3px solid #667eea;
+            margin-top: -3px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (min-width: 769px) {
+            .tab-bar {
+                position: fixed;
+                bottom: auto;
+                top: 20px;
+                left: 20px;
+                right: auto;
+                width: 160px;
+                height: auto;
+                flex-direction: column;
+                justify-content: flex-start;
+                gap: 8px;
+                background: white;
+                border-top: none;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                padding: 12px;
+                z-index: 50;
+            }
+
+            .tab-button {
+                width: 100%;
+                flex-direction: row;
+                justify-content: flex-start;
+                padding: 12px 16px;
+                border-top: none;
+                border-left: 3px solid transparent;
+                margin: 0;
+                border-radius: 8px;
+                font-size: 14px;
+            }
+
+            .tab-button.active {
+                background: #f0f0ff;
+                color: #667eea;
+                border-top: none;
+                border-left: 3px solid #667eea;
+                margin-top: 0;
+            }
+
+            .tab-button span:first-child {
+                margin-right: 8px;
+                flex-shrink: 0;
+            }
+
+            .tab-button span:last-child {
+                text-align: left;
+            }
+
+            @media (min-width: 769px) {
+                .timer-display {
+                    bottom: 20px;
+                }
+            }
         }
 
         .file-input-label {
@@ -379,6 +797,107 @@
                 flex: 1;
             }
         }
+
+        /* Welcome Modal & Help Styles */
+        .modal.hidden {
+            display: none !important;
+        }
+
+        #welcomeContent {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        #welcomeContent h2 {
+            color: #667eea;
+            margin-bottom: 16px;
+            font-size: 24px;
+        }
+
+        #welcomeContent p {
+            margin-bottom: 12px;
+        }
+
+        #welcomeContent ul {
+            margin: 12px 0 12px 20px;
+            padding: 0;
+        }
+
+        #welcomeContent li {
+            margin-bottom: 8px;
+        }
+
+        #welcomeContent strong {
+            color: #667eea;
+        }
+
+        .help-section {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .help-header {
+            padding: 12px 16px;
+            background: #e8eef9;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #667eea;
+            user-select: none;
+        }
+
+        .help-header:hover {
+            background: #dce4f5;
+        }
+
+        .help-content {
+            padding: 16px;
+            display: none;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .help-content.open {
+            display: block;
+        }
+
+        .help-content h4 {
+            color: #667eea;
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+
+        .help-content ul {
+            margin: 12px 0 12px 20px;
+        }
+
+        .help-content li {
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .help-content code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        .help-toggle {
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+
+        .help-toggle.open {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body>
@@ -426,25 +945,17 @@
         </div>
 
         <!-- Tabs -->
-        <div class="card">
-            <div class="tabs">
-                <button class="tab active" onclick="showTab('workout')">Workout</button>
-                <button class="tab" onclick="showTab('history')">History</button>
-                <button class="tab" onclick="showTab('settings')">Settings</button>
-            </div>
-
+        <div class="card" id="workoutTabCard">
             <!-- Workout Tab -->
-            <div id="workoutTab" class="tab-content">
-                <select id="workoutDay" onchange="loadWorkoutPlan()">
-                    <option value="day1">Day 1 - Unterkörper</option>
-                    <option value="day2">Day 2 - Oberkörper + Core</option>
-                    <option value="day3">Day 3 - Ganzkörper</option>
-                </select>
+            <div id="workoutTab" class="tab-content active">
+                <h2 id="workoutTabHeading" style="color: #667eea; font-size: 20px; margin-bottom: 16px;">💪 Strength Workout</h2>
+
+                <div id="workoutDaySelector"></div>
 
                 <button onclick="startWorkout()">Start Workout</button>
-                
+
                 <div id="workoutExercises"></div>
-                
+
                 <div id="workoutControls" class="hidden">
                     <div id="workoutElapsed" style="font-weight: 600; color: #667eea; margin-bottom: 8px;">Workout duration: 00:00</div>
                     <textarea id="workoutNotes" class="notes-area" placeholder="Workout notes (energy level, how you felt, etc.)" oninput="updateWorkoutNotes(this.value)"></textarea>
@@ -454,7 +965,31 @@
             </div>
 
             <!-- History Tab -->
-            <div id="historyTab" class="tab-content hidden">
+            <div id="historyTab" class="tab-content">
+                <h2 style="color: #667eea; font-size: 20px; margin-bottom: 16px;">📅 Workout Calendar</h2>
+
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button class="calendar-nav-btn" onclick="previousMonth()">◀</button>
+                        <div class="calendar-title" id="calendarTitle">January 2025</div>
+                        <button class="calendar-nav-btn" onclick="nextMonth()">▶</button>
+                    </div>
+
+                    <div id="calendarPhase" class="calendar-phase-band"></div>
+
+                    <div class="calendar-grid" id="calendarGrid"></div>
+
+                    <div id="dayDetailCard" class="day-detail-card hidden">
+                        <div class="day-detail-header">
+                            <span id="dayDetailDate"></span>
+                            <button class="day-detail-close" onclick="closeDayDetail()">✕</button>
+                        </div>
+                        <div id="dayDetailContent"></div>
+                    </div>
+                </div>
+
+                <!-- Legacy exercise history selector -->
+                <h3 style="margin-top: 24px;">📊 Exercise History</h3>
                 <select id="historyExercise" onchange="showExerciseHistory()">
                     <option value="">-- Select Exercise --</option>
                 </select>
@@ -462,32 +997,99 @@
             </div>
 
             <!-- Settings Tab -->
-            <div id="settingsTab" class="tab-content hidden">
-                <h3>🩸 Cycle Tracking (Auto-Update)</h3>
+            <div id="settingsTab" class="tab-content">
+                <h3>🩸 Cycle Tracking</h3>
+
                 <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
-                    <label>Last Period Started:</label>
-                    <input type="date" id="lastPeriodDate" onchange="saveCycleSettings()">
-                    
-                    <label>Average Cycle Length (days):</label>
-                    <input type="number" id="avgCycleLength" value="29" min="21" max="45" onchange="saveCycleSettings()">
-                    
-                    <div style="margin: 16px 0; padding: 12px; background: white; border-radius: 6px;">
-                        <div style="font-size: 14px; color: #666; margin-bottom: 8px;">Current Status:</div>
-                        <div style="font-size: 18px; font-weight: bold; color: #667eea;" id="cycleStatusDisplay">
-                            Set your last period date above
-                        </div>
-                    </div>
-                    
-                    <button class="success" onclick="markPeriodStartedToday()" style="margin-top: 12px;">
-                        🩸 Mark Period Started Today
+                    <h4 style="margin-top: 0; margin-bottom: 12px;">Import from Apple Health</h4>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 12px;">
+                        Use the free <strong>Health Auto Export</strong> iOS app to export your cycle data as JSON.
+                    </p>
+                    <label class="file-input-label" for="appleHealthUpload">
+                        📱 Upload Apple Health JSON
+                    </label>
+                    <input type="file" id="appleHealthUpload" accept=".json,application/json" onchange="handleAppleHealthImport(event)">
+                    <div style="font-size: 13px; color: #667eea; margin-bottom: 16px;" id="appleHealthStatus"></div>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin-top: 0; margin-bottom: 12px;">Local REST Endpoint (Optional)</h4>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 12px;">
+                        For live sync, configure a local server to receive cycle data over REST.
+                    </p>
+                    <label>Local Sync Server URL:</label>
+                    <input type="text" id="restEndpointUrl" placeholder="e.g., http://localhost:3456/cycle"
+                           onchange="saveRestEndpointSettings()" value="">
+                    <button class="secondary" onclick="testRestEndpoint()" style="margin-top: 8px;">
+                        🔗 Test Connection
                     </button>
-                    
-                    <div style="margin-top: 12px; padding: 12px; background: #fff3cd; border-radius: 6px; font-size: 13px;">
-                        💡 Tip: The app will automatically update your cycle day each day. Just tap the button above when your period starts!
+                    <div style="font-size: 13px; color: #999; margin-top: 8px;">
+                        Poll interval: Every 30 minutes (when app is active)
                     </div>
                 </div>
 
-                <h3>Import Workout Plan</h3>
+                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin-top: 0; margin-bottom: 12px;">Manual Settings</h4>
+                    <label>Last Period Started:</label>
+                    <input type="date" id="lastPeriodDate" onchange="saveCycleSettings()">
+
+                    <label>Average Cycle Length (days):</label>
+                    <input type="number" id="avgCycleLength" value="29" min="21" max="45" onchange="saveCycleSettings()">
+
+                    <div style="margin: 16px 0; padding: 12px; background: white; border-radius: 6px;">
+                        <div style="font-size: 14px; color: #666; margin-bottom: 8px;">Current Status:</div>
+                        <div style="font-size: 18px; font-weight: bold; color: #667eea;" id="cycleStatusDisplay">
+                            Set your cycle data above
+                        </div>
+                        <div style="font-size: 12px; color: #999; margin-top: 8px;" id="cycleImportSourceDisplay">
+                            Source: not set
+                        </div>
+                    </div>
+
+                    <button class="success" onclick="markPeriodStartedToday()" style="margin-top: 12px;">
+                        🩸 Mark Period Started Today
+                    </button>
+
+                    <div style="margin-top: 12px; padding: 12px; background: #fff3cd; border-radius: 6px; font-size: 13px;">
+                        💡 Tip: The app will automatically update your cycle day each day.
+                    </div>
+                </div>
+
+                <h3>🏋️ Active Workout Program</h3>
+                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                    <label>Choose Your Program:</label>
+                    <select id="activeProgram" onchange="switchActiveProgram(this.value)">
+                        <option value="strength">💪 Strength (CSV Import)</option>
+                        <option value="pilates">🧘 Pilates (Built-in)</option>
+                        <option value="both">🔄 Both (Choose Each Day)</option>
+                    </select>
+
+                    <div style="margin-top: 12px; padding: 12px; background: white; border-radius: 6px;">
+                        <div style="font-size: 14px; color: #666; margin-bottom: 8px;">
+                            <strong>Current Program:</strong>
+                        </div>
+                        <div style="font-size: 16px; font-weight: bold; color: #667eea;" id="currentProgramDisplay">
+                            Strength (CSV Import)
+                        </div>
+                        <div style="font-size: 13px; color: #999; margin-top: 8px;" id="programDescriptionDisplay">
+                            Upload your custom workout plan via CSV in the section below
+                        </div>
+                    </div>
+
+                    <div id="programChoiceContainer" class="hidden" style="margin-top: 12px; padding: 12px; background: #e7f3ff; border-radius: 6px;">
+                        <label>Select Today's Program:</label>
+                        <select id="programChoice" onchange="persistCurrentProgramState(); loadWorkoutPlan(); renderEditableWorkoutProgram();">
+                            <option value="strength">💪 Strength</option>
+                            <option value="pilates">🧘 Pilates</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-top: 12px; padding: 12px; background: #fff3cd; border-radius: 6px; font-size: 13px;">
+                        💡 <strong>Pilates:</strong> Auto-adjusts difficulty based on your cycle phase (Restorative → Building → Peak → Toning)
+                    </div>
+                </div>
+
+                <h3>🏋️ Import Workout Plan</h3>
                 <label class="file-input-label" for="planUpload">
                     📄 Upload Workout Plan CSV
                 </label>
@@ -517,7 +1119,10 @@
                 <h3>Data Management</h3>
                 <button class="secondary" onclick="exportData()">⬇️ Export All Data</button>
                 <button class="danger" onclick="clearAllData()">🗑️ Clear All Data</button>
-                
+
+                <h3 style="margin-top: 24px;">📚 Help & Guides</h3>
+                <div id="helpContainer"></div>
+
                 <h3 style="margin-top: 20px;">Rest Timer Settings</h3>
                 <label>Default Rest Time (seconds):</label>
                 <input type="number" id="defaultRest" value="60" min="30" max="300">
@@ -527,6 +1132,34 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Welcome Modal (First-time Users) -->
+    <div id="welcomeModal" class="modal hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+        <div style="background: white; border-radius: 12px; padding: 32px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+            <div id="welcomeContent"></div>
+            <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: space-between;">
+                <button id="welcomePrevBtn" onclick="welcomePrevious()" style="display: none; padding: 12px 24px; background: #999; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">← Previous</button>
+                <button id="welcomeSkipBtn" onclick="skipWelcome()" style="padding: 12px 24px; background: #ddd; color: #333; border: none; border-radius: 6px; cursor: pointer;">Skip</button>
+                <button id="welcomeNextBtn" onclick="welcomeNext()" style="padding: 12px 24px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Navigation Bar -->
+    <div class="tab-bar" id="tabBar">
+        <button class="tab-button active" onclick="switchTab('workout')" title="Workouts">
+            <span>💪</span>
+            <span>Workouts</span>
+        </button>
+        <button class="tab-button" onclick="switchTab('history')" title="History">
+            <span>📊</span>
+            <span>History</span>
+        </button>
+        <button class="tab-button" onclick="switchTab('settings')" title="Settings">
+            <span>⚙️</span>
+            <span>Settings</span>
+        </button>
     </div>
 
     <!-- Timer Display -->
@@ -554,6 +1187,62 @@
         let workoutTimerInterval = null;
         let workoutSessionStartedAt = null;
         let workoutStatePersistInterval = null;
+        let activeProgram = 'strength'; // 'strength', 'pilates', or 'both'
+        let currentProgramDay = 'day1'; // 'day1', 'day2', 'day3', or 'pilates'
+        let lastActiveTimestamp = null; // Track when user was last active
+
+        // Pilates Program - Built-in (no CSV needed)
+        const pilatesProgramDefault = {
+            restorative: { // Menstrual (days 1-5)
+                difficulty: 'Restorative',
+                description: 'Gentle flows, long holds, no core compression',
+                exercises: [
+                    { name: 'Legs Up the Wall Breathwork', duration: 120, cue: 'Gentle, deep breathing. Let gravity support you.' },
+                    { name: 'Spine Stretch Forward', duration: 90, cue: 'Soften the spine, no forcing. Small movements only.' },
+                    { name: 'Gentle Glute Bridge', duration: 60, cue: 'Minimal engagement, just a gentle pulse.' },
+                    { name: 'Supported Spinal Twist', duration: 90, cue: 'Use props. Release and breathe through gentle rotation.' },
+                    { name: 'Pelvic Floor Breathing', duration: 120, cue: 'Gentle engagement and release with each breath.' }
+                ]
+            },
+            building: { // Follicular (days 6-13)
+                difficulty: 'Building',
+                description: 'Moderate mat work, building energy',
+                exercises: [
+                    { name: 'Pilates Hundred', duration: 120, cue: 'Build from 50 pumps to 100. Feel the energy!' },
+                    { name: 'Roll Up', duration: 90, cue: 'Articulate through each vertebra. Control the movement.' },
+                    { name: 'Single Leg Circles', duration: 120, cue: '10 circles each direction. Keep hips stable.' },
+                    { name: 'Criss-Cross', duration: 60, cue: 'Rotate through the chest. Feel the opposition.' },
+                    { name: 'Saw', duration: 90, cue: 'Spinal rotation + hamstring stretch combined.' },
+                    { name: 'Swimming', duration: 90, cue: 'Alternating arms & legs. Build your strength.' }
+                ]
+            },
+            peak: { // Ovulatory (days 14-17)
+                difficulty: 'Peak',
+                description: 'Full reformer-style, higher intensity sequences',
+                exercises: [
+                    { name: 'Advanced Hundred', duration: 120, cue: 'Full intensity! 100 pumps with power!' },
+                    { name: 'Roll Over', duration: 90, cue: 'Control your roll. Feel your abdominals work.' },
+                    { name: 'Leg Spring Series', duration: 180, cue: 'Circles, beats, bicycle. Full reformer feel.' },
+                    { name: 'Teaser Prep (or Full Teaser)', duration: 120, cue: 'Build to the full teaser. Feel your peak strength.' },
+                    { name: 'Control Balance', duration: 90, cue: 'Balance + core control. Advanced coordination.' },
+                    { name: 'Jackknife', duration: 90, cue: 'Full body strength. Push your limits!' }
+                ]
+            },
+            toning: { // Luteal (days 18-28)
+                difficulty: 'Toning',
+                description: 'Slower pace, stability focus, reduce inversions',
+                exercises: [
+                    { name: 'Controlled Preparation', duration: 120, cue: 'Warm up gently. Slow, intentional movements.' },
+                    { name: 'Spine Articulation Series', duration: 120, cue: 'Focus on stability. No rush. Quality over quantity.' },
+                    { name: 'Side Leg Series', duration: 150, cue: 'Stability and tone. Build lean muscle.' },
+                    { name: 'Bridge Hold + Pulses', duration: 90, cue: 'Stabilizing glutes. Gentle, rhythmic pulses.' },
+                    { name: 'Mermaid Stretch', duration: 90, cue: 'Side body stretch + strengthening. Breathe deeply.' },
+                    { name: 'Cool Down Stretches', duration: 120, cue: 'Slow, supported stretching. Recovery focus.' }
+                ]
+            }
+        };
+
+        let pilatesProgram = JSON.parse(JSON.stringify(pilatesProgramDefault));
 
         async function requestPersistentStorage() {
             if (!navigator.storage || !navigator.storage.persist) {
@@ -653,6 +1342,65 @@
                 workoutSessionStartedAt
             };
             localStorage.setItem('currentWorkoutState', JSON.stringify(workoutState));
+
+            // Also persist the current program day
+            persistCurrentProgramState();
+        }
+
+        function persistCurrentProgramState() {
+            // Save which day/program the user is currently working on
+            localStorage.setItem('currentProgramDay', currentProgramDay);
+            localStorage.setItem('lastActiveTimestamp', new Date().toISOString());
+            lastActiveTimestamp = new Date().toISOString();
+        }
+
+        function updateActivityTimestamp() {
+            // Update the activity timestamp whenever the user interacts with the app
+            lastActiveTimestamp = new Date().toISOString();
+            localStorage.setItem('lastActiveTimestamp', lastActiveTimestamp);
+        }
+
+        function restoreProgramState() {
+            // Restore which day/program the user was working on
+            const savedDay = localStorage.getItem('currentProgramDay') || 'day1';
+            const savedTimestamp = localStorage.getItem('lastActiveTimestamp');
+
+            currentProgramDay = savedDay;
+
+            // If day selector exists, update it
+            const daySelector = document.getElementById('workoutDay');
+            if (daySelector) {
+                daySelector.value = savedDay;
+            }
+
+            // Check if should show resume prompt (>30 min gap)
+            if (savedTimestamp) {
+                const lastActive = new Date(savedTimestamp).getTime();
+                const now = new Date().getTime();
+                const gapMinutes = (now - lastActive) / (1000 * 60);
+
+                if (gapMinutes > 30) {
+                    // More than 30 minutes - show resume prompt
+                    setTimeout(() => {
+                        const hasCurrentWorkout = localStorage.getItem('currentWorkoutState');
+                        if (hasCurrentWorkout) {
+                            showAppStatus(
+                                'update',
+                                `You were away for ${Math.round(gapMinutes)} minutes. Resume your workout?`,
+                                'Resume',
+                                () => {
+                                    restoreCurrentWorkoutState();
+                                    switchTab('workout');
+                                },
+                                true
+                            );
+                        }
+                    }, 500);
+                }
+            }
+
+            lastActiveTimestamp = new Date().toISOString();
+            localStorage.setItem('lastActiveTimestamp', lastActiveTimestamp);
         }
 
         function getLatestExerciseLog(exerciseName) {
@@ -838,84 +1586,595 @@
             });
         }
 
-        // Cycle Management Functions (MUST BE DEFINED FIRST)
+        // Cycle Management Functions
         function calculateCurrentCycleDay() {
-            if (!lastPeriodDate) {
+            // Use window.cycleState from cycle-sync.js
+            const state = window.cycleState;
+
+            if (!state.day || !state.lastPeriodDate) {
                 document.getElementById('cycleDayDisplay').textContent = '-';
                 document.getElementById('nextPeriodInfo').textContent = 'Set period date in Settings';
-                const statusEl = document.getElementById('cycleStatusDisplay');
-                if (statusEl) statusEl.textContent = 'Set your last period date above';
+                document.getElementById('cycleStatusDisplay').textContent = 'Set your cycle data above';
+                const sourceEl = document.getElementById('cycleImportSourceDisplay');
+                if (sourceEl) sourceEl.textContent = 'Source: not set';
                 return;
             }
-            
+
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            const periodDate = new Date(lastPeriodDate);
+            const periodDate = new Date(state.lastPeriodDate);
             periodDate.setHours(0, 0, 0, 0);
-            
-            const diffTime = today - periodDate;
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            const currentDay = diffDays + 1; // Day 1 = period start day
-            
-            // Calculate next period prediction
+
+            const avgCycleLength = state.avgCycleLength || 29;
             const nextPeriodDate = new Date(periodDate);
             nextPeriodDate.setDate(nextPeriodDate.getDate() + avgCycleLength);
             const daysUntilNext = Math.floor((nextPeriodDate - today) / (1000 * 60 * 60 * 24));
-            
+
             // Update display
-            document.getElementById('cycleDayDisplay').textContent = currentDay;
-            
+            document.getElementById('cycleDayDisplay').textContent = state.day;
+
             if (daysUntilNext > 0) {
-                document.getElementById('nextPeriodInfo').textContent = 
-                    `Day ${currentDay} / ~${avgCycleLength} • Next period in ~${daysUntilNext} days`;
+                document.getElementById('nextPeriodInfo').textContent =
+                    `Day ${state.day} / ~${avgCycleLength} • Next period in ~${daysUntilNext} days`;
             } else if (daysUntilNext === 0) {
-                document.getElementById('nextPeriodInfo').textContent = 
-                    `Day ${currentDay} / ~${avgCycleLength} • Period predicted TODAY`;
+                document.getElementById('nextPeriodInfo').textContent =
+                    `Day ${state.day} / ~${avgCycleLength} • Period predicted TODAY`;
             } else {
-                document.getElementById('nextPeriodInfo').textContent = 
-                    `Day ${currentDay} • Period ${Math.abs(daysUntilNext)} days overdue`;
+                document.getElementById('nextPeriodInfo').textContent =
+                    `Day ${state.day} • Period ${Math.abs(daysUntilNext)} days overdue`;
             }
-            
+
             // Update status in settings
-            const phase = getCyclePhase(currentDay);
-            const statusEl = document.getElementById('cycleStatusDisplay');
-            if (statusEl) {
-                statusEl.innerHTML = `
-                    <div>Day ${currentDay} of cycle</div>
-                    <div style="font-size: 14px; color: #666; margin-top: 4px;">
-                        ${phase.name} • Next period: ${nextPeriodDate.toLocaleDateString()}
-                    </div>
-                `;
+            const phase = getCyclePhase(state.day);
+            document.getElementById('cycleStatusDisplay').innerHTML = `
+                <div>Day ${state.day} of cycle</div>
+                <div style="font-size: 14px; color: #666; margin-top: 4px;">
+                    ${phase.name} (${state.phaseName}) • Next period: ${nextPeriodDate.toLocaleDateString()}
+                </div>
+            `;
+
+            // Show import source
+            const sourceText = {
+                'appleHealth': `Apple Health (${getLastImportDisplay()})`,
+                'restEndpoint': `REST endpoint (${getLastImportDisplay()})`,
+                'manual': 'Manual settings'
+            };
+            const sourceEl = document.getElementById('cycleImportSourceDisplay');
+            if (sourceEl) {
+                sourceEl.textContent = `Source: ${sourceText[state.source] || 'unknown'}`;
             }
-            
+
             updateCycleInfo();
         }
-        
+
         function saveCycleSettings() {
             lastPeriodDate = document.getElementById('lastPeriodDate').value;
             avgCycleLength = parseInt(document.getElementById('avgCycleLength').value) || 29;
-            
+
             if (lastPeriodDate) {
                 localStorage.setItem('lastPeriodDate', lastPeriodDate);
                 localStorage.setItem('avgCycleLength', avgCycleLength);
+
+                // Update window.cycleState manually
+                window.cycleState.lastPeriodDate = lastPeriodDate;
+                window.cycleState.avgCycleLength = avgCycleLength;
+                window.cycleState.source = 'manual';
+                window.cycleState.importedAt = null;
+
+                // Recalculate cycle day using cycle-sync function
+                const cycleInfo = calculateCycleDay(lastPeriodDate, avgCycleLength);
+                window.cycleState.day = cycleInfo.day;
+                window.cycleState.phase = cycleInfo.phase;
+                window.cycleState.phaseName = cycleInfo.phaseName;
+
+                localStorage.setItem('cycleState', JSON.stringify(window.cycleState));
                 calculateCurrentCycleDay();
             }
         }
-        
+
         function markPeriodStartedToday() {
             const today = new Date();
             const dateString = today.toISOString().split('T')[0];
-            
+
             document.getElementById('lastPeriodDate').value = dateString;
             lastPeriodDate = dateString;
-            
+
             localStorage.setItem('lastPeriodDate', dateString);
+
+            // Update cycle state
+            window.cycleState.lastPeriodDate = dateString;
+            window.cycleState.source = 'manual';
+            window.cycleState.importedAt = null;
+
+            const cycleInfo = calculateCycleDay(dateString, window.cycleState.avgCycleLength);
+            window.cycleState.day = cycleInfo.day;
+            window.cycleState.phase = cycleInfo.phase;
+            window.cycleState.phaseName = cycleInfo.phaseName;
+
+            localStorage.setItem('cycleState', JSON.stringify(window.cycleState));
             calculateCurrentCycleDay();
-            
+
             alert('🩸 Period marked! Cycle day reset to Day 1.');
         }
 
+        // Apple Health JSON Import Handler
+        function handleAppleHealthImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            importAppleHealthJSON(file, (success, message) => {
+                const statusEl = document.getElementById('appleHealthStatus');
+                if (statusEl) statusEl.textContent = message;
+
+                // Update global lastPeriodDate for legacy compatibility
+                lastPeriodDate = window.cycleState.lastPeriodDate;
+                avgCycleLength = window.cycleState.avgCycleLength;
+
+                // Update form fields
+                if (window.cycleState.lastPeriodDate) {
+                    document.getElementById('lastPeriodDate').value = window.cycleState.lastPeriodDate;
+                }
+                document.getElementById('avgCycleLength').value = window.cycleState.avgCycleLength;
+
+                // Recalculate display
+                calculateCurrentCycleDay();
+                updateCycleInfo();
+
+                // Clear file input
+                event.target.value = '';
+            });
+        }
+
+        // REST Endpoint Functions
+        function saveRestEndpointSettings() {
+            const url = document.getElementById('restEndpointUrl').value;
+            if (url) {
+                localStorage.setItem('restEndpointUrl', url);
+            } else {
+                localStorage.removeItem('restEndpointUrl');
+            }
+        }
+
+        function testRestEndpoint() {
+            const url = document.getElementById('restEndpointUrl').value;
+            if (!url) {
+                alert('⚠️ Please enter a REST endpoint URL first.');
+                return;
+            }
+
+            const statusEl = document.getElementById('appleHealthStatus');
+            if (statusEl) statusEl.textContent = '🔄 Testing connection...';
+
+            fetchCycleFromRestEndpoint(url, (success, message) => {
+                if (statusEl) statusEl.textContent = message;
+
+                if (success) {
+                    // Update display
+                    lastPeriodDate = window.cycleState.lastPeriodDate;
+                    avgCycleLength = window.cycleState.avgCycleLength;
+
+                    document.getElementById('lastPeriodDate').value = window.cycleState.lastPeriodDate;
+                    document.getElementById('avgCycleLength').value = window.cycleState.avgCycleLength;
+
+                    calculateCurrentCycleDay();
+                    updateCycleInfo();
+                }
+            });
+        }
+
+        // Program Switching
+        function switchActiveProgram(program) {
+            activeProgram = program;
+            localStorage.setItem('activeProgram', program);
+
+            // Update display
+            const displayEl = document.getElementById('currentProgramDisplay');
+            const descEl = document.getElementById('programDescriptionDisplay');
+            const choiceContainerEl = document.getElementById('programChoiceContainer');
+
+            const programInfo = {
+                strength: {
+                    name: 'Strength (CSV Import)',
+                    description: 'Upload your custom workout plan via CSV'
+                },
+                pilates: {
+                    name: 'Pilates (Built-in)',
+                    description: 'Auto-adjusts difficulty based on your cycle phase'
+                },
+                both: {
+                    name: 'Both (Choose Each Day)',
+                    description: 'Switch between Strength and Pilates daily'
+                }
+            };
+
+            if (displayEl) displayEl.textContent = programInfo[program].name;
+            if (descEl) descEl.textContent = programInfo[program].description;
+
+            // Show program choice selector only if 'both'
+            if (choiceContainerEl) {
+                if (program === 'both') {
+                    choiceContainerEl.classList.remove('hidden');
+                } else {
+                    choiceContainerEl.classList.add('hidden');
+                }
+            }
+
+            // Update workouts tab
+            updateWorkoutTabHeading();
+            loadWorkoutPlan();
+            renderEditableWorkoutProgram();
+        }
+
+        function updateWorkoutTabHeading() {
+            // Update the Workouts tab heading based on current program and cycle phase
+            let heading = 'Workouts';
+
+            if (getCurrentWorkoutType() === 'pilates') {
+                const difficulty = getPilatesDifficultyForPhase();
+                const difficultyNames = {
+                    restorative: 'Restorative',
+                    building: 'Building',
+                    peak: 'Peak',
+                    toning: 'Toning'
+                };
+                heading = `🧘 ${difficultyNames[difficulty]} Pilates`;
+            } else {
+                heading = '💪 Strength Workout';
+            }
+
+            // Update the tab heading (if we add it to the UI)
+            const headingEl = document.getElementById('workoutTabHeading');
+            if (headingEl) {
+                headingEl.textContent = heading;
+            }
+        }
+
+        // ===== Welcome & Help System =====
+
+        const welcomeSlides = [
+            {
+                title: '🎉 Welcome to Cycle Fitness Tracker',
+                content: `<p>This app helps you track workouts tailored to your menstrual cycle.</p>
+                         <p>Your body has different hormones and energy levels throughout your cycle, so your workouts should adapt too!</p>
+                         <p>Let's set up your account in a few steps.</p>`
+            },
+            {
+                title: '🩸 Step 1: Set Your Cycle Date',
+                content: `<> <strong>Why?</strong> The app calculates your cycle phase to provide personalized workout recommendations.</p>
+                         <p><strong>Three ways to set it:</strong></p>
+                         <ul>
+                             <li><strong>Manual:</strong> Go to Settings → "Last Period Started" and enter the date manually</li>
+                             <li><strong>Apple Health JSON:</strong> Use the "Health Auto Export" iOS app to export your menstrual flow data as JSON, then upload it in Settings</li>
+                             <li><strong>REST Endpoint:</strong> Advanced users can set up a local sync server (configure the URL in Settings)</li>
+                         </ul>
+                         <p><strong>Pro tip:</strong> Mark "Period Started Today" button for quick updates.</p>`
+            },
+            {
+                title: '📋 Step 2: Import Your Workout Plan',
+                content: `<p><strong>Option A: Use CSV (Recommended for custom plans)</strong></p>
+                         <ul>
+                             <li>Create a CSV file with your exercises: Day, Exercise, Sets, Reps, Weight, Superset</li>
+                             <li>Example: <code>Day 1, Squats, 3, 8-12, 50, A</code></li>
+                             <li>Go to Settings → Upload CSV and select your file</li>
+                         </ul>
+                         <p><strong>Option B: Use Built-in Pilates</strong></p>
+                         <ul>
+                             <li>Go to Settings → Choose Program: "Pilates (Built-in)"</li>
+                             <li>4 cycle-phase specific difficulty levels (Restorative → Peak)</li>
+                         </ul>`
+            },
+            {
+                title: '🧘 About the Pilates Program',
+                content: `<p>The built-in Pilates program automatically adjusts by cycle phase:</p>
+                         <ul>
+                             <li><strong>Menstrual (Days 1-5):</strong> Restorative - gentle flows, long holds 🧘‍♀️</li>
+                             <li><strong>Follicular (Days 6-13):</strong> Building - moderate mat work 💪</li>
+                             <li><strong>Ovulatory (Days 14-17):</strong> Peak - full sequences, higher reps 🔥</li>
+                             <li><strong>Luteal (Days 18-28):</strong> Toning - slower pace, stability 🌿</li>
+                         </ul>
+                         <p>No CSV needed—just turn it on and let the app guide you!</p>`
+            },
+            {
+                title: '📅 Using the Calendar',
+                content: `<p>Track your progress and see patterns:</p>
+                         <ul>
+                             <li><strong>Navigate:</strong> Use ◀ ▶ buttons to browse months</li>
+                             <li><strong>Color dots:</strong> 💪 Blue = Strength, 🧘 Teal = Pilates</li>
+                             <li><strong>Click a past day:</strong> See all exercises, duration, and notes</li>
+                             <li><strong>Cycle bands:</strong> Subtle colors show your current phase</li>
+                         </ul>
+                         <p>Use this to spot patterns in your energy, strength, and how you feel!</p>`
+            },
+            {
+                title: '💪 How to Track Your Workouts',
+                content: `<p><strong>During each workout:</strong></p>
+                         <ul>
+                             <li><strong>🎯 Today:</strong> Shows suggested sets, reps, and weight for your cycle day</li>
+                             <li><strong>📋 Base:</strong> Your programmed template (if different)</li>
+                             <li><strong>RIR:</strong> "Reps in Reserve"—how many more reps you could do at 9/10 effort</li>
+                             <li><strong>⏱️ Rest Timer:</strong> Press the timer button between sets</li>
+                         </ul>
+                         <p><strong>Progressive Overload:</strong> The app suggests weights +2.5kg from your last session in the same phase!</p>
+                         <p><strong>Auto-Adjustment:</strong> Sets and reps automatically adjust based on your cycle day. You can override them anytime.</p>`
+            },
+            {
+                title: '✅ You\'re All Set!',
+                content: `<p>You now know:</p>
+                         <ul>
+                             <li>✓ How to set your cycle date</li>
+                             <li>✓ How to import your workout plan</li>
+                             <li>✓ How Pilates adapts to your cycle</li>
+                             <li>✓ How to use the calendar</li>
+                             <li>✓ How to track workouts with smart suggestions</li>
+                         </ul>
+                         <p>Head to the Workouts tab and start your first session!</p>
+                         <p>Need help? Check the Help section in Settings anytime. 💪</p>`
+            }
+        ];
+
+        let currentWelcomeSlide = 0;
+
+        function showWelcomeModal() {
+            const modal = document.getElementById('welcomeModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                renderWelcomeSlide();
+            }
+        }
+
+        function hideWelcomeModal() {
+            const modal = document.getElementById('welcomeModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function renderWelcomeSlide() {
+            const slide = welcomeSlides[currentWelcomeSlide];
+            const content = document.getElementById('welcomeContent');
+            content.innerHTML = `<h2>${slide.title}</h2>${slide.content}`;
+
+            // Update button visibility
+            document.getElementById('welcomePrevBtn').style.display = currentWelcomeSlide > 0 ? 'block' : 'none';
+            document.getElementById('welcomeNextBtn').textContent = currentWelcomeSlide === welcomeSlides.length - 1 ? 'Finish' : 'Next →';
+        }
+
+        function welcomeNext() {
+            if (currentWelcomeSlide < welcomeSlides.length - 1) {
+                currentWelcomeSlide++;
+                renderWelcomeSlide();
+            } else {
+                skipWelcome();
+            }
+        }
+
+        function welcomePrevious() {
+            if (currentWelcomeSlide > 0) {
+                currentWelcomeSlide--;
+                renderWelcomeSlide();
+            }
+        }
+
+        function skipWelcome() {
+            hideWelcomeModal();
+            localStorage.setItem('welcomeShown', 'true');
+        }
+
+        function setupHelpSections() {
+            const helpContainer = document.getElementById('helpContainer');
+            if (!helpContainer) return;
+
+            const helpSections = [
+                {
+                    id: 'help-cycle-tracking',
+                    title: '🩸 Setting Your Cycle Date',
+                    content: `
+                        <h4>Three Methods:</h4>
+                        <p><strong>1. Manual Entry</strong></p>
+                        <ul>
+                            <li>Enter your last period start date in the date picker</li>
+                            <li>Enter your average cycle length (default: 29 days)</li>
+                            <li>Tap "Mark Period Started Today" for quick updates</li>
+                        </ul>
+                        <p><strong>2. Apple Health JSON Import</strong></p>
+                        <ul>
+                            <li>Download "Health Auto Export" app from App Store (free)</li>
+                            <li>Connect it to your Health app</li>
+                            <li>Export as JSON format</li>
+                            <li>Upload the file in Settings → "Upload Apple Health JSON"</li>
+                            <li>The app automatically finds your most recent menstrual flow entry</li>
+                        </ul>
+                        <p><strong>3. REST Endpoint</strong></p>
+                        <ul>
+                            <li>Advanced: Set up a local sync server</li>
+                            <li>Enter the URL in Settings (e.g., <code>http://localhost:3456/cycle</code>)</li>
+                            <li>The app polls every 30 minutes for updates</li>
+                        </ul>
+                    `
+                },
+                {
+                    id: 'help-csv-import',
+                    title: '📋 Importing Your Workout CSV',
+                    content: `
+                        <h4>CSV Format:</h4>
+                        <p>Create a file with this structure:</p>
+                        <code style="display:block; padding: 12px; background: #f0f0f0; border-radius: 4px; margin: 8px 0; font-size: 12px; overflow-x: auto;">
+Day,Exercise,Sets,Reps,Weight,Superset
+Day 1,Squats,3,8-12,50,A
+Day 1,Leg Press,3,10-15,60,B
+Day 1,Leg Curl,3,10-12,40,
+Day 2,Bench Press,4,6-8,80,
+                        </code>
+                        <h4>Columns:</h4>
+                        <ul>
+                            <li><strong>Day:</strong> "Day 1", "Day 2", or "Day 3"</li>
+                            <li><strong>Exercise:</strong> Exercise name</li>
+                            <li><strong>Sets:</strong> Number (e.g., 3)</li>
+                            <li><strong>Reps:</strong> Range or number (e.g., "8-12" or "10")</li>
+                            <li><strong>Weight:</strong> Kilograms (e.g., 50)</li>
+                            <li><strong>Superset:</strong> Optional letter to group supersets (e.g., "A", "B")</li>
+                        </ul>
+                        <h4>Upload:</h4>
+                        <ul>
+                            <li>Go to Settings → "Upload Workout CSV"</li>
+                            <li>Select your CSV file</li>
+                            <li>The app loads 3 workout days automatically</li>
+                        </ul>
+                    `
+                },
+                {
+                    id: 'help-pilates',
+                    title: '🧘 Pilates Program (Built-in)',
+                    content: `
+                        <h4>Why Cycle-Aware Pilates?</h4>
+                        <p>Your hormones and energy change throughout your cycle. Pilates difficulty adjusts automatically to match your current phase:</p>
+                        <h4>The 4 Phases:</h4>
+                        <p><strong>1. Menstrual (Days 1-5): Restorative 🧘‍♀️</strong></p>
+                        <ul>
+                            <li>Gentle flows and long holds</li>
+                            <li>No core compression</li>
+                            <li>Focus: breathing and relaxation</li>
+                        </ul>
+                        <p><strong>2. Follicular (Days 6-13): Building 💪</strong></p>
+                        <ul>
+                            <li>Moderate mat work</li>
+                            <li>Building strength and energy</li>
+                            <li>Focus: gradual progression</li>
+                        </ul>
+                        <p><strong>3. Ovulatory (Days 14-17): Peak 🔥</strong></p>
+                        <ul>
+                            <li>Full reformer-style sequences</li>
+                            <li>Higher intensity and rep counts</li>
+                            <li>Focus: maximum performance</li>
+                        </ul>
+                        <p><strong>4. Luteal (Days 18-28): Toning 🌿</strong></p>
+                        <ul>
+                            <li>Slower pace, stability focus</li>
+                            <li>Reduce inversions</li>
+                            <li>Focus: controlled movements</li>
+                        </ul>
+                        <h4>How to Use:</h4>
+                        <ul>
+                            <li>Go to Settings → Choose Program → "Pilates (Built-in)"</li>
+                            <li>The difficulty updates automatically based on your cycle day</li>
+                            <li>No CSV needed—just start a workout!</li>
+                        </ul>
+                    `
+                },
+                {
+                    id: 'help-calendar',
+                    title: '📅 Workout Calendar',
+                    content: `
+                        <h4>What It Shows:</h4>
+                        <ul>
+                            <li><strong>💪 Blue dots:</strong> Days you completed Strength workouts</li>
+                            <li><strong>🧘 Teal dots:</strong> Days you completed Pilates workouts</li>
+                            <li><strong>Color bands:</strong> Your current cycle phases (background colors)</li>
+                            <li><strong>Blue border:</strong> Today's date</li>
+                        </ul>
+                        <h4>Navigation:</h4>
+                        <ul>
+                            <li>Click ◀ to go to previous month</li>
+                            <li>Click ▶ to go to next month</li>
+                            <li>Click any past workout day to see details</li>
+                        </ul>
+                        <h4>Day Details:</h4>
+                        <p>When you click a past workout day, you'll see:</p>
+                        <ul>
+                            <li>Workout type (Strength or Pilates)</li>
+                            <li>All exercises performed</li>
+                            <li>Total workout duration</li>
+                            <li>Any notes you wrote</li>
+                        </ul>
+                        <h4>Tips:</h4>
+                        <ul>
+                            <li>Use the calendar to spot patterns in your energy and strength</li>
+                            <li>Compare workouts across different cycle phases</li>
+                            <li>Track how you felt on different days</li>
+                        </ul>
+                    `
+                },
+                {
+                    id: 'help-tracking',
+                    title: '💪 Tracking Your Workouts',
+                    content: `
+                        <h4>Auto-Suggested Values:</h4>
+                        <p>The app shows two sets of recommendations for each exercise:</p>
+                        <ul>
+                            <li><strong>📋 Base:</strong> Your programmed template</li>
+                            <li><strong>🎯 Today:</strong> Personalized to your cycle day</li>
+                        </ul>
+                        <h4>What Changes by Cycle Day:</h4>
+                        <p><strong>Sets:</strong></p>
+                        <ul>
+                            <li>Menstrual (Days 1-5): -1 set (deload)</li>
+                            <li>Early Follicular (Days 6-9): Base sets</li>
+                            <li>Late Follicular (Days 10-13): +1 set (building)</li>
+                            <li>Ovulatory (Days 14-17): +1 set (peak)</li>
+                            <li>Luteal (Days 18-28): -1 set (stability)</li>
+                        </ul>
+                        <p><strong>Reps:</strong></p>
+                        <ul>
+                            <li>Menstrual: 8-10 reps (quality)</li>
+                            <li>Follicular: 8-12 reps (building→increasing)</li>
+                            <li>Ovulatory: 12-15 reps (peak performance)</li>
+                            <li>Luteal: 8-10 reps (controlled)</li>
+                        </ul>
+                        <p><strong>Weight:</strong></p>
+                        <ul>
+                            <li>Tracked from previous sessions in the same cycle phase</li>
+                            <li>Suggests +2.5kg for progressive overload</li>
+                            <li>Falls back to average if no same-phase history</li>
+                        </ul>
+                        <h4>RIR (Reps in Reserve):</h4>
+                        <ul>
+                            <li>How many more reps you could do at 9/10 effort</li>
+                            <li>0-1 RIR = near max effort</li>
+                            <li>2-3 RIR = great for hypertrophy</li>
+                            <li>4-5 RIR = endurance work</li>
+                        </ul>
+                        <h4>Progressive Overload:</h4>
+                        <ul>
+                            <li>The app remembers your last session in each cycle phase</li>
+                            <li>Suggests slightly heavier weights each time</li>
+                            <li>This helps you progress while respecting cycle phases</li>
+                        </ul>
+                        <h4>You Can Override Anytime:</h4>
+                        <ul>
+                            <li>All suggested values are just starting points</li>
+                            <li>Feel free to adjust sets, reps, or weight as needed</li>
+                            <li>Listen to your body!</li>
+                        </ul>
+                    `
+                }
+            ];
+
+            helpSections.forEach(section => {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'help-section';
+                sectionDiv.innerHTML = `
+                    <div class="help-header" onclick="toggleHelp(this)">
+                        <span>${section.title}</span>
+                        <span class="help-toggle">▼</span>
+                    </div>
+                    <div class="help-content">
+                        ${section.content}
+                    </div>
+                `;
+                helpContainer.appendChild(sectionDiv);
+            });
+        }
+
+        function toggleHelp(headerElement) {
+            const content = headerElement.nextElementSibling;
+            const toggle = headerElement.querySelector('.help-toggle');
+            content.classList.toggle('open');
+            toggle.classList.toggle('open');
+        }
+
         // Initialize app
+        let restEndpointPollInterval = null;
+
         window.onload = function() {
             registerServiceWorker();
             attachNetworkListeners();
@@ -923,16 +2182,55 @@
             loadFromLocalStorage();
             setDefaultWorkoutPlan();
             restoreCurrentWorkoutState();
+            restoreProgramState();  // Restore which day/program user was on (+ show resume prompt if needed)
             calculateCurrentCycleDay();
             updateCycleInfo();
+
+            // Initialize program settings
+            const savedProgram = localStorage.getItem('activeProgram') || 'strength';
+            activeProgram = savedProgram;
+            const programSelector = document.getElementById('activeProgram');
+            if (programSelector) {
+                programSelector.value = savedProgram;
+                switchActiveProgram(savedProgram);
+            }
+
             loadWorkoutPlan();
             populateHistoryDropdown();
+            renderEditableWorkoutProgram();  // Render exercises for editing (when not in workout)
+            restoreActiveTab();  // Restore tab state
+
+            // Setup help sections
+            setupHelpSections();
+
+            // Show welcome modal for first-time users
+            if (!localStorage.getItem('welcomeShown')) {
+                showWelcomeModal();
+            }
+
+            // Start REST endpoint polling if configured
+            const restUrl = document.getElementById('restEndpointUrl').value || localStorage.getItem('restEndpointUrl');
+            if (restUrl) {
+                restEndpointPollInterval = startRestEndpointPolling(restUrl);
+            }
+
+            // Debug: Log workout history to console
+            console.log('Workout History:', workoutHistory);
+            console.log('Current Program Day:', currentProgramDay);
 
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
                     persistCurrentWorkoutState();
+                } else {
+                    // App became visible - update activity timestamp
+                    updateActivityTimestamp();
                 }
             });
+
+            // Track user activity (clicks, touches, keyboard) to update activity timestamp
+            document.addEventListener('click', updateActivityTimestamp, true);
+            document.addEventListener('touchstart', updateActivityTimestamp, true);
+            document.addEventListener('keydown', updateActivityTimestamp, true);
 
             window.addEventListener('pagehide', () => {
                 persistCurrentWorkoutState();
@@ -941,7 +2239,7 @@
             window.addEventListener('beforeunload', () => {
                 persistCurrentWorkoutState();
             });
-            
+
             // Update cycle day daily
             setInterval(calculateCurrentCycleDay, 60000); // Check every minute
         };
@@ -980,79 +2278,8 @@
             }
         }
 
+
         // Cycle Management
-        function calculateCurrentCycleDay() {
-            if (!lastPeriodDate) {
-                document.getElementById('cycleDayDisplay').textContent = '-';
-                document.getElementById('nextPeriodInfo').textContent = 'Set period date in Settings';
-                document.getElementById('cycleStatusDisplay').textContent = 'Set your last period date above';
-                return;
-            }
-            
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const periodDate = new Date(lastPeriodDate);
-            periodDate.setHours(0, 0, 0, 0);
-            
-            const diffTime = today - periodDate;
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            const currentDay = diffDays + 1; // Day 1 = period start day
-            
-            // Calculate next period prediction
-            const nextPeriodDate = new Date(periodDate);
-            nextPeriodDate.setDate(nextPeriodDate.getDate() + avgCycleLength);
-            const daysUntilNext = Math.floor((nextPeriodDate - today) / (1000 * 60 * 60 * 24));
-            
-            // Update display
-            document.getElementById('cycleDayDisplay').textContent = currentDay;
-            
-            if (daysUntilNext > 0) {
-                document.getElementById('nextPeriodInfo').textContent = 
-                    `Day ${currentDay} / ~${avgCycleLength} • Next period in ~${daysUntilNext} days`;
-            } else if (daysUntilNext === 0) {
-                document.getElementById('nextPeriodInfo').textContent = 
-                    `Day ${currentDay} / ~${avgCycleLength} • Period predicted TODAY`;
-            } else {
-                document.getElementById('nextPeriodInfo').textContent = 
-                    `Day ${currentDay} • Period ${Math.abs(daysUntilNext)} days overdue`;
-            }
-            
-            // Update status in settings
-            const phase = getCyclePhase(currentDay);
-            document.getElementById('cycleStatusDisplay').innerHTML = `
-                <div>Day ${currentDay} of cycle</div>
-                <div style="font-size: 14px; color: #666; margin-top: 4px;">
-                    ${phase.name} • Next period: ${nextPeriodDate.toLocaleDateString()}
-                </div>
-            `;
-            
-            updateCycleInfo();
-        }
-        
-        function saveCycleSettings() {
-            lastPeriodDate = document.getElementById('lastPeriodDate').value;
-            avgCycleLength = parseInt(document.getElementById('avgCycleLength').value) || 29;
-            
-            if (lastPeriodDate) {
-                localStorage.setItem('lastPeriodDate', lastPeriodDate);
-                localStorage.setItem('avgCycleLength', avgCycleLength);
-                calculateCurrentCycleDay();
-            }
-        }
-        
-        function markPeriodStartedToday() {
-            const today = new Date();
-            const dateString = today.toISOString().split('T')[0];
-            
-            document.getElementById('lastPeriodDate').value = dateString;
-            lastPeriodDate = dateString;
-            
-            localStorage.setItem('lastPeriodDate', dateString);
-            calculateCurrentCycleDay();
-            
-            alert('🩸 Period marked! Cycle day reset to Day 1.');
-        }
-        
         function updateCycleInfo() {
             // Get current day from calculation
             const dayText = document.getElementById('cycleDayDisplay').textContent;
@@ -1130,25 +2357,218 @@
             }
         }
 
+        // Pilates Helper Functions
+        function getPilatesDifficultyForPhase() {
+            const phase = window.cycleState.phase;
+            if (!phase) return 'restorative'; // Default fallback
+
+            const phaseMap = {
+                menstrual: 'restorative',
+                follicular: 'building',
+                ovulatory: 'peak',
+                luteal: 'toning'
+            };
+
+            return phaseMap[phase] || 'restorative';
+        }
+
+        function getCurrentPilatesExercises() {
+            const difficulty = getPilatesDifficultyForPhase();
+            return pilatesProgram[difficulty]?.exercises || [];
+        }
+
+        function getCurrentWorkoutType() {
+            if (activeProgram === 'strength') return 'strength';
+            if (activeProgram === 'pilates') return 'pilates';
+
+            // For 'both', check the program selector
+            const programChoice = document.getElementById('programChoice');
+            if (programChoice) {
+                return programChoice.value === 'pilates' ? 'pilates' : 'strength';
+            }
+
+            return 'strength';
+        }
+
+        // ===== Auto Weight & Rep Calculation =====
+
+        function getRecommendedSetsForCycleDay(dayNumber, baseSets = 3) {
+            // Return number of sets based on cycle day (adjust base sets)
+            if (dayNumber >= 1 && dayNumber <= 5) {
+                return Math.max(2, baseSets - 1); // Menstrual: Reduce sets (deload)
+            } else if (dayNumber >= 6 && dayNumber <= 9) {
+                return baseSets; // Early Follicular: Base sets
+            } else if (dayNumber >= 10 && dayNumber <= 13) {
+                return Math.min(5, baseSets + 1); // Late Follicular: Increase slightly
+            } else if (dayNumber >= 14 && dayNumber <= 17) {
+                return Math.min(5, baseSets + 1); // Ovulatory: Peak - max sets
+            } else {
+                return Math.max(2, baseSets - 1); // Luteal: Reduce slightly (stability focus)
+            }
+        }
+
+        function getRecommendedRepsForCycleDay(dayNumber) {
+            // Return rep range based on cycle day
+            if (dayNumber >= 1 && dayNumber <= 5) {
+                return { min: 8, max: 10, display: '8-10' }; // Menstrual: Lower reps, quality
+            } else if (dayNumber >= 6 && dayNumber <= 9) {
+                return { min: 8, max: 10, display: '8-10' }; // Early Follicular: Building
+            } else if (dayNumber >= 10 && dayNumber <= 13) {
+                return { min: 10, max: 12, display: '10-12' }; // Late Follicular: Increasing
+            } else if (dayNumber >= 14 && dayNumber <= 17) {
+                return { min: 12, max: 15, display: '12-15' }; // Ovulatory: Peak performance
+            } else {
+                return { min: 8, max: 10, display: '8-10' }; // Luteal: Lower reps, stability
+            }
+        }
+
+        function getSuggestedWeightForExercise(exerciseName, currentWeight, cycleDay) {
+            // Find previous sessions of this exercise to track progression
+            const previousSessions = [];
+            workoutHistory.forEach(workout => {
+                const exercise = workout.exercises.find(ex => ex.name === exerciseName);
+                if (exercise && exercise.sets && exercise.sets.length > 0) {
+                    const avgWeight = exercise.sets.reduce((sum, set) => sum + (parseFloat(set.weight) || 0), 0) / exercise.sets.length;
+                    if (avgWeight > 0) {
+                        previousSessions.push({
+                            date: workout.date,
+                            weight: avgWeight,
+                            phase: getPhaseFromDate(workout.date)
+                        });
+                    }
+                }
+            });
+
+            // If no previous sessions, return current weight or default
+            if (previousSessions.length === 0) {
+                return parseFloat(currentWeight) || 5;
+            }
+
+            // Get last session of same phase for progressive overload
+            const currentPhase = window.cycleState?.phase || 'menstrual';
+            const lastSamePhaseSession = previousSessions.reverse().find(s => s.phase === currentPhase);
+
+            if (lastSamePhaseSession) {
+                // Suggest 2.5kg more for progressive overload (or 5 lbs / 2-3 kg increment)
+                const progression = lastSamePhaseSession.weight + 2.5;
+                return Math.round(progression * 2) / 2; // Round to nearest 0.5
+            }
+
+            // Otherwise use average of all previous sessions
+            const averageWeight = previousSessions.reduce((sum, s) => sum + s.weight, 0) / previousSessions.length;
+            return Math.round(averageWeight * 2) / 2;
+        }
+
+        function getPhaseFromDate(dateString) {
+            // Calculate phase from a date
+            if (!window.cycleState || !window.cycleState.lastPeriodDate) return 'menstrual';
+
+            const targetDate = new Date(dateString);
+            targetDate.setHours(0, 0, 0, 0);
+            const periodDate = new Date(window.cycleState.lastPeriodDate);
+            periodDate.setHours(0, 0, 0, 0);
+
+            const diffMs = targetDate - periodDate;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const cycleDay = diffDays + 1;
+            const avgCycleLength = window.cycleState.avgCycleLength || 29;
+            const normalizedDay = ((cycleDay - 1) % avgCycleLength) + 1;
+
+            if (normalizedDay >= 1 && normalizedDay <= 5) return 'menstrual';
+            if (normalizedDay >= 6 && normalizedDay <= 13) return 'follicular';
+            if (normalizedDay >= 14 && normalizedDay <= 17) return 'ovulatory';
+            return 'luteal';
+        }
+
+        function getCurrentCycleDay() {
+            return window.cycleState?.day || 1;
+        }
+
+        function getCurrentCyclePhase() {
+            return window.cycleState?.phase || 'menstrual';
+        }
+
+        // ===== End Auto Weight & Rep Calculation =====
+
+        function getCurrentWorkoutExercises() {
+            if (getCurrentWorkoutType() === 'pilates') {
+                return getCurrentPilatesExercises();
+            }
+
+            // Strength program
+            const daySelect = document.getElementById('workoutDay');
+            const day = daySelect ? daySelect.value : currentProgramDay || 'day1';
+            return workoutPlan[day] || [];
+        }
+
         // Workout Management
         function loadWorkoutPlan() {
-            const day = document.getElementById('workoutDay').value;
-            const exercises = workoutPlan[day] || [];
+            const workoutType = getCurrentWorkoutType();
             const container = document.getElementById('workoutExercises');
-            
-            if (currentWorkout) {
-                container.innerHTML = '';
+
+            // Render the day selector using dedicated function
+            renderDaySelector();
+
+            // Update heading based on workout type
+            if (workoutType === 'strength') {
+                document.getElementById('workoutTabHeading').textContent = '💪 Strength Workout';
+            } else if (workoutType === 'pilates') {
+                const difficulty = getPilatesDifficultyForPhase();
+                const difficultyNames = {
+                    restorative: 'Restorative',
+                    building: 'Building',
+                    peak: 'Peak',
+                    toning: 'Toning'
+                };
+                document.getElementById('workoutTabHeading').textContent = `🧘 ${difficultyNames[difficulty]} Pilates`;
+            }
+
+            if (!currentWorkout) return;
+
+            const exercises = getCurrentWorkoutExercises();
+            container.innerHTML = '';
+
+            if (workoutType === 'pilates') {
+                // Render Pilates exercises with duration + cue
                 exercises.forEach((ex, idx) => {
                     const exDiv = document.createElement('div');
                     exDiv.className = 'exercise-item';
-                    
+
+                    exDiv.innerHTML = `
+                        <div class="exercise-header">
+                            <span class="exercise-name">${ex.name}</span>
+                        </div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                            Duration: ${ex.duration}s • Cue: ${ex.cue}
+                        </div>
+                        <div style="margin-bottom: 12px; padding: 12px; background: white; border-radius: 6px; border-left: 3px solid #ffc107;">
+                            <div style="font-size: 13px; font-style: italic; color: #666;">"${ex.cue}"</div>
+                        </div>
+                        <textarea class="notes-area" placeholder="How did this feel? Any modifications?"
+                                  onchange="updateExerciseNotes(${idx}, this.value)">${currentWorkout.exercises[idx]?.notes || ''}</textarea>
+                    `;
+
+                    container.appendChild(exDiv);
+                });
+            } else {
+                // Render Strength exercises with sets/reps/weight (existing logic)
+                const day = document.getElementById('workoutDay').value;
+                exercises.forEach((ex, idx) => {
+                    const exDiv = document.createElement('div');
+                    exDiv.className = 'exercise-item';
+
+                    // Calculate suggested weight, reps, and sets for current cycle day
+                    const suggestedWeight = getSuggestedWeightForExercise(ex.name, ex.weight, getCurrentCycleDay());
+                    const repRange = getRecommendedRepsForCycleDay(getCurrentCycleDay());
+                    const suggestedSets = getRecommendedSetsForCycleDay(getCurrentCycleDay(), ex.sets);
+
                     let setsHTML = '';
                     const numSets = currentWorkout.exercises[idx]?.sets?.length || ex.sets;
                     const lastSets = currentWorkout.exercises[idx]?.lastPerformance?.sets || [];
                     const lastSessionDate = currentWorkout.exercises[idx]?.lastPerformance?.date || '';
-                    
+
                     for (let i = 0; i < numSets; i++) {
-                        const setData = currentWorkout.exercises[idx]?.sets[i] || {weight: ex.weight, reps: '', rir: ''};
+                        const setData = currentWorkout.exercises[idx]?.sets[i] || {weight: suggestedWeight, reps: repRange.display, rir: ''};
                         const lastSet = lastSets[i] || null;
                         const lastSetText = lastSet
                             ? `Last: ${lastSet.weight || '-'}kg × ${lastSet.reps || '-'} reps`
@@ -1156,16 +2576,16 @@
                         setsHTML += `
                             <div class="set-row">
                                 <div class="set-number">Set ${i+1}</div>
-                                <input type="number" class="set-input" placeholder="kg" 
+                                <input type="number" class="set-input" placeholder="kg"
                                        value="${setData.weight}" step="0.25"
                                        onchange="updateSet(${idx}, ${i}, 'weight', this.value)">
-                                <input type="text" class="set-input" placeholder="reps" 
+                                <input type="text" class="set-input" placeholder="reps"
                                        value="${setData.reps}"
                                        onchange="updateSet(${idx}, ${i}, 'reps', this.value)">
-                                <input type="number" class="set-input" placeholder="RIR" 
+                                <input type="number" class="set-input" placeholder="RIR"
                                        value="${setData.rir}" step="0.5" min="0" max="5"
                                        onchange="updateSet(${idx}, ${i}, 'rir', this.value)">
-                                <button style="padding: 4px; width: auto; margin: 0; font-size: 12px;" 
+                                <button style="padding: 4px; width: auto; margin: 0; font-size: 12px;"
                                         onclick="startRestTimer()">⏱️</button>
                             </div>
                             <div style="font-size: 12px; color: #666; margin: -4px 0 8px 0;">
@@ -1173,21 +2593,24 @@
                             </div>
                         `;
                     }
-                    
+
                     exDiv.innerHTML = `
                         <div class="exercise-header">
                             <span class="exercise-name">${ex.name}</span>
                             ${ex.superset ? `<span class="superset-badge">Superset ${ex.superset}</span>` : ''}
                         </div>
                         <div style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                            Target: ${ex.sets} sets × ${ex.reps} reps @ ${ex.weight}kg
+                            📋 Base: ${ex.sets} sets × ${ex.reps} reps @ ${ex.weight}kg
+                        </div>
+                        <div style="font-size: 12px; font-weight: bold; color: #667eea; margin-bottom: 8px;">
+                            🎯 Today (Day ${getCurrentCycleDay()}): ${suggestedSets} sets × ${repRange.display} reps @ ${suggestedWeight}kg
                         </div>
                         ${lastSessionDate ? `<div style="font-size: 12px; color: #666; margin-bottom: 8px;">Last session: ${new Date(lastSessionDate).toLocaleDateString()}</div>` : ''}
                         ${setsHTML}
-                        <textarea class="notes-area" placeholder="Exercise notes..." 
+                        <textarea class="notes-area" placeholder="Exercise notes..."
                                   onchange="updateExerciseNotes(${idx}, this.value)">${currentWorkout.exercises[idx]?.notes || ''}</textarea>
                     `;
-                    
+
                     container.appendChild(exDiv);
                 });
             }
@@ -1205,24 +2628,51 @@
                 }
             }
 
-            const day = document.getElementById('workoutDay').value;
-            const exercises = workoutPlan[day];
-            
+            const workoutType = getCurrentWorkoutType();
+            const exercises = getCurrentWorkoutExercises();
+
+            // Get day info (for strength) or difficulty (for pilates)
+            let day = 'pilates';
+            if (workoutType === 'strength') {
+                day = document.getElementById('workoutDay').value;
+            }
+
             // Get current cycle day for logging
             const cycleDayText = document.getElementById('cycleDayDisplay').textContent;
             const cycleDay = parseInt(cycleDayText) || 1;
-            
-            currentWorkout = {
-                day: day,
-                date: new Date().toISOString(),
-                startedAt: new Date().toISOString(),
-                cycleDay: cycleDay,
-                exercises: exercises.map(ex => createExerciseEntryFromHistory(ex)),
-                notes: ''
-            };
+
+            if (workoutType === 'pilates') {
+                // Pilates: create simplified exercise entries without sets/reps
+                currentWorkout = {
+                    day: day,
+                    type: 'pilates',
+                    difficulty: getPilatesDifficultyForPhase(),
+                    date: new Date().toISOString(),
+                    startedAt: new Date().toISOString(),
+                    cycleDay: cycleDay,
+                    exercises: exercises.map(ex => ({
+                        name: ex.name,
+                        duration: ex.duration,
+                        cue: ex.cue,
+                        notes: ''
+                    })),
+                    notes: ''
+                };
+            } else {
+                // Strength: create traditional exercise entries with sets
+                currentWorkout = {
+                    day: day,
+                    type: 'strength',
+                    date: new Date().toISOString(),
+                    startedAt: new Date().toISOString(),
+                    cycleDay: cycleDay,
+                    exercises: exercises.map(ex => createExerciseEntryFromHistory(ex)),
+                    notes: ''
+                };
+            }
 
             workoutSessionStartedAt = currentWorkout.startedAt;
-            
+
             document.getElementById('workoutControls').classList.remove('hidden');
             document.getElementById('workoutNotes').value = '';
             loadWorkoutPlan();
@@ -1236,10 +2686,217 @@
             }
         }
 
-        function updateExerciseNotes(exIdx, notes) {
-            if (currentWorkout) {
-                currentWorkout.exercises[exIdx].notes = notes;
-                persistCurrentWorkoutState();
+        // Exercise Editing System
+        let editingExerciseIndex = null;
+        let customizedDays = JSON.parse(localStorage.getItem('customizedDays') || '{}');
+
+        function renderDaySelector() {
+            // Render the day selector for Strength program
+            const daySelectorContainer = document.getElementById('workoutDaySelector');
+            if (!daySelectorContainer) return;
+
+            if (getCurrentWorkoutType() === 'strength') {
+                const selectedValue = currentProgramDay || 'day1';
+
+                daySelectorContainer.innerHTML = `
+                    <select id="workoutDay" onchange="changeDaySelection(this.value)" style="width: 100%; padding: 8px; margin-bottom: 16px; border: 2px solid #667eea; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                        <option value="day1" ${selectedValue === 'day1' ? 'selected' : ''}>Day 1 - Unterkörper</option>
+                        <option value="day2" ${selectedValue === 'day2' ? 'selected' : ''}>Day 2 - Oberkörper + Core</option>
+                        <option value="day3" ${selectedValue === 'day3' ? 'selected' : ''}>Day 3 - Ganzkörper</option>
+                    </select>
+                `;
+                console.log('Day selector rendered with value:', selectedValue);
+            } else {
+                daySelectorContainer.innerHTML = '';
+            }
+        }
+
+        function changeDaySelection(newDay) {
+            console.log('changeDaySelection called with:', newDay);
+            currentProgramDay = newDay;
+            persistCurrentProgramState();
+            renderEditableWorkoutProgram();
+            loadWorkoutPlan();
+        }
+
+        function renderEditableWorkoutProgram() {
+            // Only show editable exercises for Strength program
+            if (getCurrentWorkoutType() !== 'strength') {
+                document.getElementById('workoutExercises').innerHTML = '';
+                return;
+            }
+
+            // Make sure day selector exists
+            renderDaySelector();
+
+            const daySelect = document.getElementById('workoutDay');
+            if (!daySelect) return;
+
+            const day = daySelect.value;
+            const exercises = workoutPlan[day] || [];
+            const container = document.getElementById('workoutExercises');
+
+            // Don't render if in active workout
+            if (currentWorkout) return;
+
+            container.innerHTML = '';
+
+            // Show customised badge if applicable
+            const isCustomized = customizedDays[day];
+            if (isCustomized) {
+                const badge = document.createElement('div');
+                badge.style.cssText = 'text-align: center; margin-bottom: 12px;';
+                badge.innerHTML = '<span style="background: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block;">📝 This day has been customised</span>';
+                container.appendChild(badge);
+            }
+
+            if (exercises.length === 0) {
+                container.innerHTML += '<p style="text-align: center; color: #999;">No exercises yet. Click "Add exercise" to get started!</p>';
+            }
+
+            exercises.forEach((ex, idx) => {
+                const exDiv = document.createElement('div');
+                exDiv.className = `exercise-item${editingExerciseIndex === idx ? ' exercise-edit-mode' : ''}`;
+                exDiv.id = `exercise-${idx}`;
+
+                if (editingExerciseIndex === idx) {
+                    // Edit mode
+                    exDiv.innerHTML = `
+                        <div class="exercise-header" style="flex-wrap: wrap;">
+                            <div style="width: 100%; margin-bottom: 12px;">
+                                <label>Exercise Name:</label>
+                                <input type="text" id="editName-${idx}" value="${ex.name}" placeholder="Exercise name" style="margin-bottom: 0; padding: 10px;">
+                            </div>
+                        </div>
+                        <div class="exercise-input-group">
+                            <div class="exercise-input-wrapper">
+                                <label>Sets</label>
+                                <input type="number" id="editSets-${idx}" value="${ex.sets}" min="1" placeholder="Sets">
+                            </div>
+                            <div class="exercise-input-wrapper">
+                                <label>Reps</label>
+                                <input type="text" id="editReps-${idx}" value="${ex.reps}" placeholder="e.g., 10-12">
+                            </div>
+                            <div class="exercise-input-wrapper">
+                                <label>Weight (kg)</label>
+                                <input type="number" id="editWeight-${idx}" value="${ex.weight}" step="0.25" placeholder="Weight">
+                            </div>
+                            <div class="exercise-input-wrapper">
+                                <label>Superset</label>
+                                <input type="text" id="editSuperset-${idx}" value="${ex.superset || ''}" placeholder="A, B, C...">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="success" style="flex: 1;" onclick="saveExercise(${idx})">✓ Save</button>
+                            <button class="secondary" style="flex: 1;" onclick="cancelEditExercise()">✗ Cancel</button>
+                        </div>
+                    `;
+                } else {
+                    // View mode - show suggested weight, sets, and reps for today's cycle day
+                    const suggestedWeight = getSuggestedWeightForExercise(ex.name, ex.weight, getCurrentCycleDay());
+                    const repRange = getRecommendedRepsForCycleDay(getCurrentCycleDay());
+                    const suggestedSets = getRecommendedSetsForCycleDay(getCurrentCycleDay(), ex.sets);
+                    exDiv.innerHTML = `
+                        <div class="exercise-header">
+                            <span class="exercise-name">${ex.name}</span>
+                            <div class="exercise-actions">
+                                <button class="exercise-action-btn" onclick="editExercise(${idx})" title="Edit">✏️</button>
+                                <button class="exercise-action-btn delete" onclick="deleteExercise(${idx})" title="Delete">🗑️</button>
+                            </div>
+                        </div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 4px;">
+                            📋 Base: ${ex.sets} sets × ${ex.reps} reps @ ${ex.weight}kg${ex.superset ? ` (Superset ${ex.superset})` : ''}
+                        </div>
+                        <div style="font-size: 12px; font-weight: bold; color: #667eea;">
+                            🎯 Today (Day ${getCurrentCycleDay()}): ${suggestedSets} sets × ${repRange.display} reps @ ${suggestedWeight}kg
+                        </div>
+                    `;
+                }
+
+                container.appendChild(exDiv);
+            });
+
+            // Add exercise button
+            const addBtn = document.createElement('button');
+            addBtn.className = 'add-exercise-btn';
+            addBtn.textContent = '+ Add Exercise';
+            addBtn.onclick = () => addExercise();
+            container.appendChild(addBtn);
+        }
+
+        function editExercise(idx) {
+            editingExerciseIndex = idx;
+            renderEditableWorkoutProgram();
+        }
+
+        function saveExercise(idx) {
+            const day = document.getElementById('workoutDay').value;
+            const name = document.getElementById(`editName-${idx}`).value || `Exercise ${idx + 1}`;
+            const sets = parseInt(document.getElementById(`editSets-${idx}`).value) || 1;
+            const reps = document.getElementById(`editReps-${idx}`).value || '10-12';
+            const weight = parseFloat(document.getElementById(`editWeight-${idx}`).value) || 0;
+            const superset = document.getElementById(`editSuperset-${idx}`).value || '';
+
+            workoutPlan[day][idx] = { name, sets, reps: reps.toString(), weight, superset };
+            markDayAsCustomized(day);
+            saveToLocalStorage();
+
+            editingExerciseIndex = null;
+            renderEditableWorkoutProgram();
+        }
+
+        function cancelEditExercise() {
+            editingExerciseIndex = null;
+            renderEditableWorkoutProgram();
+        }
+
+        function deleteExercise(idx) {
+            if (!confirm('Delete this exercise?')) return;
+
+            const day = document.getElementById('workoutDay').value;
+            workoutPlan[day].splice(idx, 1);
+            markDayAsCustomized(day);
+            saveToLocalStorage();
+
+            editingExerciseIndex = null;
+            renderEditableWorkoutProgram();
+        }
+
+        function addExercise() {
+            const day = document.getElementById('workoutDay').value;
+            const newExercise = {
+                name: 'New Exercise',
+                sets: 3,
+                reps: '10-12',
+                weight: 0,
+                superset: ''
+            };
+
+            if (!workoutPlan[day]) workoutPlan[day] = [];
+            workoutPlan[day].push(newExercise);
+
+            markDayAsCustomized(day);
+            saveToLocalStorage();
+
+            editingExerciseIndex = workoutPlan[day].length - 1;
+            renderEditableWorkoutProgram();
+
+            // Auto-focus the new exercise name input
+            setTimeout(() => {
+                const input = document.getElementById(`editName-${editingExerciseIndex}`);
+                if (input) input.focus();
+            }, 0);
+        }
+
+        function markDayAsCustomized(day) {
+            customizedDays[day] = true;
+            localStorage.setItem('customizedDays', JSON.stringify(customizedDays));
+
+            // Update dropdown option text to show badge
+            const option = document.querySelector(`option[value="${day}"]`);
+            if (option && !option.textContent.includes('📝')) {
+                const text = option.textContent.replace(/ 📝$/, '');
+                option.textContent = text + ' 📝';
             }
         }
 
@@ -1419,6 +3076,257 @@
             container.innerHTML = html;
         }
 
+        // Calendar Functions
+        let currentCalendarMonth = new Date().getMonth(); // 0-11
+        let currentCalendarYear = new Date().getFullYear();
+        let selectedCalendarDate = null;
+
+        function getFirstDayOfMonth(year, month) {
+            return new Date(year, month, 1).getDay();
+        }
+
+        function getDaysInMonth(year, month) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+
+        function getWorkoutForDate(dateString) {
+            // dateString format: "2025-04-05"
+            // w.date format: "2025-04-05T12:34:56.000Z"
+            const targetDate = dateString.split('T')[0]; // Get YYYY-MM-DD part
+            const workout = workoutHistory.find(w => {
+                const workoutDateStr = w.date.split('T')[0]; // Get YYYY-MM-DD part
+                console.log('Comparing:', workoutDateStr, 'with', targetDate, '=', workoutDateStr === targetDate);
+                return workoutDateStr === targetDate;
+            });
+            return workout;
+        }
+
+        function getCyclePhaseForDate(day) {
+            // Calculate cycle phase for a given day of month
+            if (!window.cycleState || !window.cycleState.lastPeriodDate) {
+                return null;
+            }
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const periodDate = new Date(window.cycleState.lastPeriodDate);
+            periodDate.setHours(0, 0, 0, 0);
+
+            const targetDate = new Date(currentCalendarYear, currentCalendarMonth, day);
+            targetDate.setHours(0, 0, 0, 0);
+
+            const diffMs = targetDate - periodDate;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const cycleDay = diffDays + 1;
+
+            const avgCycleLength = window.cycleState.avgCycleLength || 29;
+            const normalizedDay = ((cycleDay - 1) % avgCycleLength) + 1;
+
+            const phaseMap = {
+                menstrual: { min: 1, max: 5, name: 'menstrual' },
+                follicular: { min: 6, max: 13, name: 'follicular' },
+                ovulatory: { min: 14, max: 17, name: 'ovulatory' },
+                luteal: { min: 18, max: avgCycleLength, name: 'luteal' }
+            };
+
+            for (const [key, phase] of Object.entries(phaseMap)) {
+                if (normalizedDay >= phase.min && normalizedDay <= phase.max) {
+                    return phase.name;
+                }
+            }
+
+            return 'menstrual';
+        }
+
+        function renderCalendar() {
+            const firstDay = getFirstDayOfMonth(currentCalendarYear, currentCalendarMonth);
+            const daysInMonth = getDaysInMonth(currentCalendarYear, currentCalendarMonth);
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+
+            // Update title
+            document.getElementById('calendarTitle').textContent =
+                `${monthNames[currentCalendarMonth]} ${currentCalendarYear}`;
+
+            // Render phase bands
+            renderPhaseBands();
+
+            // Clear and render grid
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            // Day headers (Sun-Sat)
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+
+            // Empty cells for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-cell empty';
+                grid.appendChild(emptyCell);
+            }
+
+            // Days of month
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = document.createElement('div');
+                const dateStr = `${currentCalendarYear}-${String(currentCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const cellDate = new Date(currentCalendarYear, currentCalendarMonth, day);
+
+                // Check if today
+                const isToday = cellDate.toDateString() === today.toDateString();
+                if (isToday) {
+                    cell.classList.add('today');
+                }
+
+                // Render date number
+                cell.textContent = day.toString();
+
+                // Check for workout
+                const workout = getWorkoutForDate(dateStr);
+                if (workout) {
+                    if (workout.type === 'pilates') {
+                        cell.classList.add('pilates');
+                    } else {
+                        cell.classList.add('strength');
+                    }
+                } else {
+                    // Check if it's a rest day (has cycle data but no workout)
+                    if (window.cycleState && window.cycleState.lastPeriodDate) {
+                        // Don't mark as rest - just leave blank
+                    }
+                }
+
+                cell.classList.add('calendar-cell');
+                cell.onclick = () => selectDay(day, dateStr);
+                grid.appendChild(cell);
+            }
+
+            // Close any open detail card
+            document.getElementById('dayDetailCard').classList.add('hidden');
+        }
+
+        function renderPhaseBands() {
+            const phaseBandContainer = document.getElementById('calendarPhase');
+            phaseBandContainer.innerHTML = '';
+
+            if (!window.cycleState || !window.cycleState.lastPeriodDate) {
+                return;
+            }
+
+            const daysInMonth = getDaysInMonth(currentCalendarYear, currentCalendarMonth);
+            const phases = {};
+
+            // Get unique phases for this month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const phase = getCyclePhaseForDate(day);
+                if (phase) phases[phase] = true;
+            }
+
+            // Render phase indicators
+            const phaseNames = ['menstrual', 'follicular', 'ovulatory', 'luteal'];
+            const phaseColors = {
+                menstrual: '#fee',
+                follicular: '#efe',
+                ovulatory: '#ffe',
+                luteal: '#eef'
+            };
+
+            phaseNames.forEach(phase => {
+                if (phases[phase]) {
+                    const indicator = document.createElement('div');
+                    indicator.className = `phase-indicator phase-${phase}`;
+                    indicator.style.background = phaseColors[phase];
+                    indicator.textContent = phase.charAt(0).toUpperCase() + phase.slice(1);
+                    phaseBandContainer.appendChild(indicator);
+                }
+            });
+        }
+
+        function selectDay(day, dateStr) {
+            selectedCalendarDate = dateStr;
+            const workout = getWorkoutForDate(dateStr);
+
+            if (!workout) {
+                document.getElementById('dayDetailCard').classList.add('hidden');
+                return;
+            }
+
+            // Show day detail
+            const card = document.getElementById('dayDetailCard');
+            const dateDisplay = new Date(dateStr).toLocaleDateString('en-US',
+                { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+
+            let typeEmoji = '💪';
+            let typeName = 'Strength';
+            if (workout.type === 'pilates') {
+                typeEmoji = '🧘';
+                typeName = 'Pilates';
+            }
+
+            document.getElementById('dayDetailDate').innerHTML = `${typeEmoji} ${dateDisplay}`;
+
+            // Render exercises
+            let html = '';
+            if (workout.exercises && workout.exercises.length > 0) {
+                workout.exercises.forEach(ex => {
+                    const details = workout.type === 'pilates'
+                        ? `${ex.duration}s • ${ex.cue || 'No cue'}`
+                        : `${ex.sets?.length || 0} sets${ex.sets ? ' - ' + ex.sets.map(s => `${s.weight}kg×${s.reps}`).join(', ') : ''}`;
+
+                    html += `
+                        <div class="day-detail-exercise">
+                            <div class="day-detail-exercise-name">${ex.name}</div>
+                            <div class="day-detail-exercise-details">${details}</div>
+                            ${ex.notes ? `<div style="font-size: 12px; margin-top: 4px; font-style: italic;">"${ex.notes}"</div>` : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            if (workout.durationFormatted) {
+                html += `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 12px; color: #666;">
+                    ⏱️ Duration: ${workout.durationFormatted}
+                </div>`;
+            }
+
+            if (workout.notes) {
+                html += `<div style="margin-top: 12px; padding: 12px; background: white; border-radius: 6px; font-size: 12px; font-style: italic;">
+                    Workout notes: "${workout.notes}"
+                </div>`;
+            }
+
+            document.getElementById('dayDetailContent').innerHTML = html;
+            card.classList.remove('hidden');
+        }
+
+        function closeDayDetail() {
+            document.getElementById('dayDetailCard').classList.add('hidden');
+        }
+
+        function previousMonth() {
+            currentCalendarMonth--;
+            if (currentCalendarMonth < 0) {
+                currentCalendarMonth = 11;
+                currentCalendarYear--;
+            }
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentCalendarMonth++;
+            if (currentCalendarMonth > 11) {
+                currentCalendarMonth = 0;
+                currentCalendarYear++;
+            }
+            renderCalendar();
+        }
+
         // CSV Import Functions
         function importWorkoutPlan(event) {
             const file = event.target.files[0];
@@ -1491,9 +3399,10 @@
                 cycleHistory,
                 lastPeriodDate,
                 avgCycleLength,
+                cycleState: window.cycleState,  // Include cycle state
                 exportDate: new Date().toISOString()
             };
-            
+
             const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1535,6 +3444,12 @@
                     if (data.avgCycleLength) {
                         avgCycleLength = parseInt(data.avgCycleLength) || avgCycleLength;
                         document.getElementById('avgCycleLength').value = avgCycleLength;
+                    }
+
+                    // Restore cycle state if present
+                    if (data.cycleState && typeof data.cycleState === 'object') {
+                        window.cycleState = data.cycleState;
+                        console.log('Restored cycleState from backup:', window.cycleState);
                     }
 
                     saveToLocalStorage();
@@ -1586,7 +3501,9 @@
             const cycle = localStorage.getItem('cycleHistory');
             const periodDate = localStorage.getItem('lastPeriodDate');
             const cycleLen = localStorage.getItem('avgCycleLength');
-            
+            const restUrl = localStorage.getItem('restEndpointUrl');
+            const cycleState = localStorage.getItem('cycleState');
+
             try {
                 if (plan) workoutPlan = JSON.parse(plan);
             } catch (error) {
@@ -1605,6 +3522,16 @@
                 console.error('Could not parse cycle history from localStorage:', error);
             }
 
+            // Restore cycle state from localStorage (set by cycle-sync.js)
+            if (cycleState) {
+                try {
+                    window.cycleState = JSON.parse(cycleState);
+                    console.log('Restored cycleState from localStorage:', window.cycleState);
+                } catch (error) {
+                    console.error('Could not parse cycleState from localStorage:', error);
+                }
+            }
+
             if (periodDate) {
                 lastPeriodDate = periodDate;
                 document.getElementById('lastPeriodDate').value = periodDate;
@@ -1613,15 +3540,84 @@
                 avgCycleLength = parseInt(cycleLen);
                 document.getElementById('avgCycleLength').value = cycleLen;
             }
+            if (restUrl) {
+                document.getElementById('restEndpointUrl').value = restUrl;
+            }
+
+            // Load customized days
+            const customized = localStorage.getItem('customizedDays');
+            if (customized) {
+                try {
+                    customizedDays = JSON.parse(customized);
+                } catch (error) {
+                    console.error('Could not parse customizedDays from localStorage:', error);
+                }
+            }
+
+            // Load last active timestamp
+            const savedTimestamp = localStorage.getItem('lastActiveTimestamp');
+            if (savedTimestamp) {
+                lastActiveTimestamp = savedTimestamp;
+            }
         }
 
-        // Tab Navigation
+        // Tab Navigation - New System
+        let tabScrollPositions = {
+            workout: 0,
+            history: 0,
+            settings: 0
+        };
+
+        function switchTab(tabName) {
+            // Save current scroll position
+            const currentActiveContent = document.querySelector('.tab-content.active');
+            if (currentActiveContent) {
+                const currentTabName = currentActiveContent.id.replace('Tab', '');
+                tabScrollPositions[currentTabName] = window.scrollY || 0;
+            }
+
+            // Deactivate all tabs and contents
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Activate selected tab button
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(tabName.substring(0, 3))) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Activate selected content
+            const tabContent = document.getElementById(tabName + 'Tab');
+            if (tabContent) {
+                tabContent.classList.add('active');
+
+                // Render calendar when history tab is selected
+                if (tabName === 'history') {
+                    setTimeout(() => {
+                        renderCalendar();
+                    }, 0);
+                }
+            }
+
+            // Restore scroll position after a brief delay for DOM to settle
+            setTimeout(() => {
+                window.scrollTo(0, tabScrollPositions[tabName] || 0);
+            }, 0);
+
+            // Save to sessionStorage for persistence
+            sessionStorage.setItem('activeTab', tabName);
+        }
+
+        // Legacy function for compatibility
         function showTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            
-            event.target.classList.add('active');
-            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            switchTab(tabName);
+        }
+
+        // Restore active tab on page load
+        function restoreActiveTab() {
+            const savedTab = sessionStorage.getItem('activeTab') || 'workout';
+            switchTab(savedTab);
         }
     </script>
 </body>
