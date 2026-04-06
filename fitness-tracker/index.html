@@ -295,6 +295,8 @@
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
+            width: 100%;
+            overflow: hidden;
         }
 
         .calendar-header {
@@ -326,6 +328,7 @@
             padding: 0;
             transition: all 0.2s;
             margin: 0;
+            flex-shrink: 0;
         }
 
         .calendar-nav-btn:hover {
@@ -338,6 +341,7 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 8px;
             margin-bottom: 20px;
+            width: 100%;
         }
 
         .calendar-day-header {
@@ -362,6 +366,28 @@
             font-weight: 500;
             transition: all 0.2s;
             min-height: 50px;
+            font-size: 16px;
+        }
+
+        /* Cycle phase background colors */
+        .calendar-cell.phase-menstrual {
+            background: #fee;
+            color: #c33;
+        }
+
+        .calendar-cell.phase-follicular {
+            background: #efe;
+            color: #3a3;
+        }
+
+        .calendar-cell.phase-ovulatory {
+            background: #ffe;
+            color: #c93;
+        }
+
+        .calendar-cell.phase-luteal {
+            background: #eef;
+            color: #36c;
         }
 
         .calendar-cell:hover:not(.empty) {
@@ -495,10 +521,12 @@
             .calendar-cell {
                 min-height: 45px;
                 font-size: 14px;
+                padding: 4px;
             }
 
             .calendar-grid {
                 gap: 6px;
+                grid-template-columns: repeat(7, 1fr) !important;
             }
         }
 
@@ -910,44 +938,43 @@
             </div>
         </div>
 
-        <!-- Header Card -->
-        <div class="card">
-            <h1>💪 Fitness Tracker</h1>
-            <div class="header-info">
-                <div>
-                    <div style="font-size: 14px; color: #666;">Current Cycle Day</div>
-                    <div style="font-size: 32px; font-weight: bold; color: #667eea;" id="cycleDayDisplay">1</div>
-                    <div style="font-size: 12px; color: #999;" id="nextPeriodInfo">Set period date in Settings</div>
-                </div>
-                <div id="cyclePhase" class="cycle-badge">Week 1 - MENSTRUAL</div>
-            </div>
-
-            <div id="guidelines" class="guidelines">
-                <div class="guideline-box">
-                    <div class="guideline-label">SETS</div>
-                    <div class="guideline-value" id="guideSets">2 sets</div>
-                </div>
-                <div class="guideline-box">
-                    <div class="guideline-label">WEIGHT</div>
-                    <div class="guideline-value" id="guideWeight">60-70%</div>
-                </div>
-                <div class="guideline-box">
-                    <div class="guideline-label">RIR</div>
-                    <div class="guideline-value" id="guideRIR">4-5</div>
-                </div>
-                <div class="guideline-box">
-                    <div class="guideline-label">FOCUS</div>
-                    <div class="guideline-value" id="guideFocus">Recovery</div>
-                </div>
-            </div>
-
-            <div id="recommendation" class="recommendation hidden"></div>
-        </div>
-
         <!-- Tabs -->
         <div class="card" id="workoutTabCard">
+            <!-- Overview Tab -->
+            <div id="overviewTab" class="tab-content active">
+                <h1>💪 Fitness Tracker</h1>
+                <div class="header-info">
+                    <div>
+                        <div style="font-size: 14px; color: #666;">Current Cycle Day</div>
+                        <div style="font-size: 32px; font-weight: bold; color: #667eea;" id="cycleDayDisplay">1</div>
+                        <div style="font-size: 12px; color: #999;" id="nextPeriodInfo">Set period date in Settings</div>
+                    </div>
+                    <div id="cyclePhase" class="cycle-badge">Week 1 - MENSTRUAL</div>
+                </div>
+
+                <div id="guidelines" class="guidelines">
+                    <div class="guideline-box">
+                        <div class="guideline-label">SETS</div>
+                        <div class="guideline-value" id="guideSets">2 sets</div>
+                    </div>
+                    <div class="guideline-box">
+                        <div class="guideline-label">WEIGHT</div>
+                        <div class="guideline-value" id="guideWeight">60-70%</div>
+                    </div>
+                    <div class="guideline-box">
+                        <div class="guideline-label">RIR</div>
+                        <div class="guideline-value" id="guideRIR">4-5</div>
+                    </div>
+                    <div class="guideline-box">
+                        <div class="guideline-label">FOCUS</div>
+                        <div class="guideline-value" id="guideFocus">Recovery</div>
+                    </div>
+                </div>
+
+                <div id="recommendation" class="recommendation hidden"></div>
+            </div>
             <!-- Workout Tab -->
-            <div id="workoutTab" class="tab-content active">
+            <div id="workoutTab" class="tab-content">
                 <h2 id="workoutTabHeading" style="color: #667eea; font-size: 20px; margin-bottom: 16px;">💪 Strength Workout</h2>
 
                 <div id="workoutDaySelector"></div>
@@ -1148,12 +1175,16 @@
 
     <!-- Tab Navigation Bar -->
     <div class="tab-bar" id="tabBar">
-        <button class="tab-button active" onclick="switchTab('workout')" title="Workouts">
+        <button class="tab-button active" onclick="switchTab('overview')" title="Overview">
+            <span>📊</span>
+            <span>Overview</span>
+        </button>
+        <button class="tab-button" onclick="switchTab('workout')" title="Workouts">
             <span>💪</span>
             <span>Workouts</span>
         </button>
         <button class="tab-button" onclick="switchTab('history')" title="History">
-            <span>📊</span>
+            <span>📅</span>
             <span>History</span>
         </button>
         <button class="tab-button" onclick="switchTab('settings')" title="Settings">
@@ -3178,6 +3209,12 @@ Day 2,Bench Press,4,6-8,80,
                 const dateStr = `${currentCalendarYear}-${String(currentCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const cellDate = new Date(currentCalendarYear, currentCalendarMonth, day);
 
+                // Add cycle phase background color
+                const phase = getCyclePhaseForDate(day);
+                if (phase) {
+                    cell.classList.add(`phase-${phase}`);
+                }
+
                 // Check if today
                 const isToday = cellDate.toDateString() === today.toDateString();
                 if (isToday) {
@@ -3563,6 +3600,7 @@ Day 2,Bench Press,4,6-8,80,
 
         // Tab Navigation - New System
         let tabScrollPositions = {
+            overview: 0,
             workout: 0,
             history: 0,
             settings: 0
@@ -3580,10 +3618,13 @@ Day 2,Bench Press,4,6-8,80,
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            // Activate selected tab button
+            // Find and activate the button that matches this tab
+            let buttonFound = false;
             document.querySelectorAll('.tab-button').forEach(btn => {
-                if (btn.textContent.toLowerCase().includes(tabName.substring(0, 3))) {
+                const buttonText = btn.textContent.toLowerCase();
+                if (buttonText.includes(tabName)) {
                     btn.classList.add('active');
+                    buttonFound = true;
                 }
             });
 
@@ -3616,7 +3657,7 @@ Day 2,Bench Press,4,6-8,80,
 
         // Restore active tab on page load
         function restoreActiveTab() {
-            const savedTab = sessionStorage.getItem('activeTab') || 'workout';
+            const savedTab = sessionStorage.getItem('activeTab') || 'overview';
             switchTab(savedTab);
         }
     </script>
