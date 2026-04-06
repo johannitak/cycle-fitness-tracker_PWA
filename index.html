@@ -3130,7 +3130,8 @@ Day 2,Bench Press,4,6-8,80,
         let selectedCalendarDate = null;
 
         function getFirstDayOfMonth(year, month) {
-            return new Date(year, month, 1).getDay();
+            // getDay() returns 0=Sun..6=Sat; convert to Mon-based (0=Mon..6=Sun)
+            return (new Date(year, month, 1).getDay() + 6) % 7;
         }
 
         function getDaysInMonth(year, month) {
