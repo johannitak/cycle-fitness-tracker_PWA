@@ -296,7 +296,8 @@
             padding: 20px;
             margin-bottom: 20px;
             width: 100%;
-            overflow: hidden;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .calendar-header {
@@ -338,19 +339,23 @@
 
         .calendar-grid {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 6px;
             margin-bottom: 20px;
             width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            overflow-x: hidden;
         }
 
         .calendar-day-header {
             text-align: center;
             font-weight: 600;
             color: #666;
-            font-size: 12px;
-            padding: 8px 0;
+            font-size: 11px;
+            padding: 6px 0;
             text-transform: uppercase;
+            min-width: 0;
         }
 
         .calendar-cell {
@@ -365,8 +370,10 @@
             background: white;
             font-weight: 500;
             transition: all 0.2s;
-            min-height: 50px;
-            font-size: 16px;
+            min-height: 42px;
+            min-width: 0;
+            font-size: 14px;
+            padding: 2px;
         }
 
         /* Cycle phase background colors */
@@ -519,14 +526,24 @@
 
         @media (max-width: 600px) {
             .calendar-cell {
-                min-height: 45px;
-                font-size: 14px;
-                padding: 4px;
+                min-height: 34px;
+                font-size: 12px;
+                padding: 2px;
+            }
+
+            .calendar-day-header {
+                font-size: 10px;
+                padding: 4px 0;
             }
 
             .calendar-grid {
-                gap: 6px;
-                grid-template-columns: repeat(7, 1fr) !important;
+                gap: 4px;
+                grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+                width: 100%;
+            }
+
+            .calendar-container {
+                overflow-x: auto;
             }
         }
 
@@ -3186,8 +3203,8 @@ Day 2,Bench Press,4,6-8,80,
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';
 
-            // Day headers (Sun-Sat)
-            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            // Day headers (Mon-Sun)
+            const dayHeaders = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             dayHeaders.forEach(day => {
                 const header = document.createElement('div');
                 header.className = 'calendar-day-header';
