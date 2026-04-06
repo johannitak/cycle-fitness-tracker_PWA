@@ -3155,8 +3155,6 @@ Day 2,Bench Press,4,6-8,80,
                 return null;
             }
 
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
             const periodDate = new Date(window.cycleState.lastPeriodDate);
             periodDate.setHours(0, 0, 0, 0);
 
@@ -3168,7 +3166,13 @@ Day 2,Bench Press,4,6-8,80,
             const cycleDay = diffDays + 1;
 
             const avgCycleLength = window.cycleState.avgCycleLength || 29;
-            const normalizedDay = ((cycleDay - 1) % avgCycleLength) + 1;
+            
+            // Proper modulo for negative numbers: handle past dates correctly
+            let normalizedDay = (cycleDay - 1) % avgCycleLength;
+            if (normalizedDay < 0) {
+                normalizedDay += avgCycleLength;
+            }
+            normalizedDay += 1;
 
             const phaseMap = {
                 menstrual: { min: 1, max: 5, name: 'menstrual' },
